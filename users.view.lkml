@@ -1,6 +1,41 @@
 view: users {
   sql_table_name: public.users ;;
 
+##Templated Filter Example added as part of office hours
+##hidden yes/no filter that will be helpful and more reproducible
+dimension: traffic_source_filter {
+  hidden:  yes
+  type:  yesno
+  sql:  {% condition incoming_traffic_source %}
+  ${traffic_source} {% endcondition %};;
+  }
+
+  filter:incoming_traffic_source {
+    type: string
+    suggest_dimension:
+    users.traffic_source
+    suggest_explore: users
+  }
+
+  measure: changeable_count_measure {
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: traffic_source_filter
+      value: "Yes"
+    }
+  }
+  ##potentially better than the measure defined above because it's a count
+  ##vs a count distinct can save time on a dashboard loading
+  measure: changeable_count_measure_better {
+    type: count
+    filters: {
+      field: traffic_source_filter
+      value: "Yes"
+    }
+  }
+##end of what was added from office hours
+
   dimension: id {
     primary_key: yes
     type: number
