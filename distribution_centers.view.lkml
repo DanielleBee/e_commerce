@@ -1,5 +1,5 @@
 view: distribution_centers {
-  sql_table_name: public.distribution_centers ;;
+  sql_table_name: demo_db.distribution_centers ;;
 
   dimension: id {
     primary_key: yes

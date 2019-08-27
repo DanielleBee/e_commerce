@@ -1,5 +1,5 @@
 view: products {
-  sql_table_name: public.products ;;
+  sql_table_name: demo_db.products ;;
 
 ##Parameters Session from Office Hours on August 22
   parameter: select_product_detail {
