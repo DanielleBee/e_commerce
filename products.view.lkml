@@ -129,7 +129,6 @@ THEN ${category}
     ]
   }
 }
-## RE PASTE IN OF THE ORIGINAL PRODUCTS VIEW FILE -- END
 
 # measure: total_retail_price {
 #   type:  sum
