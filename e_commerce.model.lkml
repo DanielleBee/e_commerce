@@ -39,45 +39,44 @@ explore: order_items {
   }
 }
 
+explore: products { }
 
+# explore: products_with_joins {
+#   join: inventory_items {
+#     sql_on:  ${products.id} = ${inventory_items.product_id} ;;
+#     type:  left_outer
+#     relationship:  one_to_many
+#   }
 
-explore: products {
-  join: inventory_items {
-    sql_on:  ${products.id} = ${inventory_items.product_id} ;;
-    type:  left_outer
-    relationship:  one_to_many
-  }
-
-  join: order_items {
-    sql_on: ${order_items.inventory_item_id} = ${products.id};;
-    type: left_outer
-    relationship: one_to_one
-  }
-
-  join: orders {
-    sql_on:  ${orders.id} = ${order_items.order_id} ;;
-    type: left_outer
-    relationship:  one_to_many
-  }
-
-  join:  distribution_centers {
-    sql_on: ${distribution_centers.id} = ${inventory_items.distribution_center_id} ;;
-    type: left_outer
-    relationship: many_to_one
-  }
-
-  join: users {
-    sql_on: ${users.id} = ${orders.user_id} ;;
-    type: left_outer
-    relationship: many_to_one
-  }
-
-  join: user_order_facts {
-    sql_on: ${user_order_facts.user_id} = ${users.id} ;;
-    type: left_outer
-    relationship: one_to_one
-  }
-}
+#   join: order_items {
+#     sql_on: ${order_items.inventory_item_id} = ${products.id};;
+#     type: left_outer
+#     relationship: one_to_one
+#   }
+#
+#   join: orders {
+#     sql_on:  ${orders.id} = ${order_items.order_id} ;;
+#     type: left_outer
+#     relationship:  one_to_many
+#   }
+#
+#   join:  distribution_centers {
+#     sql_on: ${distribution_centers.id} = ${inventory_items.distribution_center_id} ;;
+#     type: left_outer
+#     relationship: many_to_one
+#   }
+#
+#   join: users {
+#     sql_on: ${users.id} = ${orders.user_id} ;;
+#     type: left_outer
+#     relationship: many_to_one
+#   }
+#
+#   join: user_order_facts {
+#     sql_on: ${user_order_facts.user_id} = ${users.id} ;;
+#     type: left_outer
+#     relationship: one_to_one
+#   }
 
 explore: orders { }
 

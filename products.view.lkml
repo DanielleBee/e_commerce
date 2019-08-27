@@ -1,7 +1,6 @@
 view: products {
   sql_table_name: public.products ;;
 
-
 ##Parameters Session from Office Hours on August 22
   parameter: select_product_detail {
     type: unquoted
@@ -116,11 +115,6 @@ THEN ${category}
     value_format_name: usd
   }
 
-measure: total_retail_price {
-  type:  sum
-  sql: ${TABLE}.retail_price ;;
-}
-
   measure: count {
     type: count
     drill_fields: [
@@ -135,3 +129,9 @@ measure: total_retail_price {
     ]
   }
 }
+## RE PASTE IN OF THE ORIGINAL PRODUCTS VIEW FILE -- END
+
+# measure: total_retail_price {
+#   type:  sum
+#   sql: ${TABLE}.retail_price ;;
+# }
