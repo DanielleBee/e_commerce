@@ -1,20 +1,20 @@
 view: distribution_centers {
-  sql_table_name: demo_db.distribution_centers ;;
+  sql_table_name: thelook_events.DISTRIBUTION_CENTERS ;;
 
   dimension: id {
     primary_key: yes
     type: number
-    sql: ${TABLE}.id ;;
-  }
-
-  dimension: longitude {
-    type: number
-    sql: ${TABLE}.longitude ;;
+    sql: ${TABLE}.ID ;;
   }
 
   dimension: latitude {
     type: number
-    sql: ${TABLE}.latitude ;;
+    sql: ${TABLE}.LATITUDE ;;
+  }
+
+  dimension: longitude {
+    type: number
+    sql: ${TABLE}.LONGITUDE ;;
   }
 
   dimension: location {
@@ -25,6 +25,11 @@ view: distribution_centers {
 
   dimension: name {
     type: string
-    sql: ${TABLE}.name ;;
+    sql: ${TABLE}.NAME ;;
+  }
+
+  measure: count {
+    type: count
+    drill_fields: [id, name]
   }
 }
