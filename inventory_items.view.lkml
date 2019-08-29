@@ -47,6 +47,12 @@ view: inventory_items {
     sql: ${TABLE}.sold_at ;;
   }
 
+dimension_group: in_inventory{
+  type: duration
+  sql_start: ${created_raw} ;;
+  sql_end: ${sold_raw} ;;
+}
+
   measure: count {
     type: count
     drill_fields: [
