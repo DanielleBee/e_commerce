@@ -28,6 +28,11 @@ view: orders {
     sql: ${TABLE}.created_at ;;
   }
 
+  dimension: created_date_formatted {
+    sql: ${created_date} ;;
+    html: {{ rendered_value | date: "%B %d, %Y" }};;
+  }
+
   dimension: status {
     type: string
     sql: ${TABLE}.status ;;
@@ -36,6 +41,11 @@ view: orders {
   dimension: is_complete {
     type: yesno
     sql: ${status} = 'complete' ;;
+  }
+
+  measure: most_recent_order {
+    type: date
+    sql: MAX(${created_date}) ;;
   }
 
   measure: count {
