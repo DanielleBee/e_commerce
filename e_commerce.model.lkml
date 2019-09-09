@@ -41,43 +41,6 @@ explore: order_items {
 
 explore: products { }
 
-# explore: products_with_joins {
-#   join: inventory_items {
-#     sql_on:  ${products.id} = ${inventory_items.product_id} ;;
-#     type:  left_outer
-#     relationship:  one_to_many
-#   }
-
-#   join: order_items {
-#     sql_on: ${order_items.inventory_item_id} = ${products.id};;
-#     type: left_outer
-#     relationship: one_to_one
-#   }
-#
-#   join: orders {
-#     sql_on:  ${orders.id} = ${order_items.order_id} ;;
-#     type: left_outer
-#     relationship:  one_to_many
-#   }
-#
-#   join:  distribution_centers {
-#     sql_on: ${distribution_centers.id} = ${inventory_items.distribution_center_id} ;;
-#     type: left_outer
-#     relationship: many_to_one
-#   }
-#
-#   join: users {
-#     sql_on: ${users.id} = ${orders.user_id} ;;
-#     type: left_outer
-#     relationship: many_to_one
-#   }
-#
-#   join: user_order_facts {
-#     sql_on: ${user_order_facts.user_id} = ${users.id} ;;
-#     type: left_outer
-#     relationship: one_to_one
-#   }
-
 explore: orders { }
 
 explore: user_order_facts { }
@@ -85,11 +48,36 @@ explore: user_order_facts { }
 explore: users {
   view_name: users  ## Important to define the view_name in base explore if extending
   fields: [ALL_FIELDS*, -users.distance_from_distribution_center]
+
   join: orders {
     type: left_outer
     sql_on: ${orders.user_id} = ${users.id} ;;
     relationship: one_to_many
   }
+
+  join: order_items {
+    sql_on: ${orders.id} = ${order_items.order_id} ;;
+    type: left_outer
+    relationship: one_to_many
+  }
+
+  join: inventory_items {
+    sql_on: ${inventory_items.id} = ${order_items.inventory_item_id} ;;
+    type: left_outer
+    relationship: one_to_one
+  }
+
+  join: products {
+    sql_on: ${products.id} = ${inventory_items.product_id} ;;
+    type: left_outer
+    relationship: many_to_one
+  }
+
+  join:  distribution_centers {
+    sql_on: ${distribution_centers.id} = ${inventory_items.distribution_center_id} ;;
+    type: left_outer
+    relationship: many_to_one
+}
 }
 
 ## Basic example of extended explore.
@@ -110,15 +98,15 @@ explore: users_new {
 
 ## Extended Explore Example with a Self-Join
 
-# explore: buyers_and_sellers {
-#   view_label: "Sellers"
-#   extends: [users_new]
-#   label: "Sellers and Buyers"
-#   join: Buyers {
-#     from: users_extended
-#     sql_on: ${Buyers.id} = ${users.id} ;;
-#     relationship: many_to_one
-#   }
-# }
+explore: buyers_and_sellers {
+  view_label: "Sellers"
+  extends: [users_new]
+  label: "Sellers and Buyers"
+  join: Buyers {
+    from: users_extended
+    sql_on: ${Buyers.id} = ${users.id} ;;
+    relationship: many_to_one
+  }
+}
 
 explore:distribution_centers { }
