@@ -9,7 +9,7 @@ view: order_items {
 
   dimension: order_id {
     type: number
-    hidden: yes
+    hidden: no
     sql: ${TABLE}.order_id ;;
   }
 
@@ -116,6 +116,12 @@ view: order_items {
       status,
       products.name
     ]
+  }
+
+  dimension: discounted_sale_price {
+    type: number
+    sql: ${sale_price} * 0.8;;
+    value_format_name: usd
   }
 
   measure: total_sale_price {

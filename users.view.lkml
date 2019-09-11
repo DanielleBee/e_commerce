@@ -146,19 +146,25 @@
       drill_fields: [id, first_name, last_name]
     }
 
-    measure: men_count {
-      type: count
+    measure: female_count {
+      type: count_distinct
+      sql: ${id} ;;
       filters: {
         field: gender
-        value: "Male"
+        value: "f"
       }
     }
-
-    measure: female_count {
-      type: count
+    measure: count_users_over_21 {
+      type: count_distinct
+      sql: ${id};;
       filters: {
-        field: gender
-        value: "Female"
-      }
+        field: age
+        value: ">21"
+    }
+}
+    measure: percent_users_over_21 {
+      type: number
+      value_format_name: percent_0
+      sql: ${count_users_over_21}/${count} ;;
     }
   }
