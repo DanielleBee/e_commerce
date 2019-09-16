@@ -138,7 +138,7 @@ view: order_items {
 
   measure: total_profit {
     type: number
-    sql: ${total_sale_price} - ${products.total_cost} ;;
+    sql: ${total_sale_price} - ${products.total_retail_price} ;;
   }
 
   measure: least_expensive_item {

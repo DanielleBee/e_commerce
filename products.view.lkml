@@ -67,12 +67,6 @@ THEN ${category}
     sql: ${TABLE}.id ;;
   }
 
-  dimension: cost {
-    type: number
-    sql: ${TABLE}.cost ;;
-    value_format: "$0.00"
-  }
-
   dimension: retail_price {
     type: number
     sql: ${TABLE}.retail_price ;;
@@ -109,17 +103,10 @@ THEN ${category}
     sql: ${TABLE}.category ;;
   }
 
-  measure: total_cost {
-    type: sum
-    sql: ${cost} ;;
-    value_format_name: usd
-  }
-
   measure: count {
     type: count
     drill_fields: [
       id,
-      cost,
       retail_price,
       sku,
       department,
@@ -127,10 +114,14 @@ THEN ${category}
       name,
       category
     ]
+    link: {
+      label: "Drill to Explore"
+      url: "/explore/e_commerce/products?fields=products.brand,products.id,products.retail_price,products.sku&f[products.department]={{ _filters['products.department'] | url_encode }}&f[products.brand]={{ value | url_encode }}"
+    }
   }
-}
 
-# measure: total_retail_price {
-#   type:  sum
-#   sql: ${TABLE}.retail_price ;;
-# }
+measure: total_retail_price {
+  type:  sum
+  sql: ${TABLE}.retail_price ;;
+}
+}

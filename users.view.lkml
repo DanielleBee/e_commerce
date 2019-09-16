@@ -63,6 +63,7 @@
     dimension: country {
       type: string
       sql: ${TABLE}.country ;;
+    drill_fields: [state, city]
     }
 
     dimension: age {
@@ -79,7 +80,11 @@
 
     dimension: gender {
       type: string
-      sql: ${TABLE}.gender ;;
+      sql: {% if users.email._in_query %}
+      CONCAT(${TABLE}.gender,' - ', ${TABLE}.id)
+      {% else %}
+      ${TABLE}.gender
+      {% endif %};;
     }
 
     dimension: email {
@@ -153,6 +158,15 @@
     measure: count {
       type: count
       drill_fields: [id, first_name, last_name]
+      value_format: "#,##0"
+      html:
+        <a href="#drillmenu" target="_self">
+        {% if value > 50 %}
+        <p style="color:green">{{rendered_value}} <img src="https://www.freefavicon.com/freefavicons/animal/dog-152-203766.png" alt="Image result for puppy favicon" width="25" height="25" style="margin-top: 20px; margin-bottom: 19px;"></p>
+        {% else %}
+        <p style="color:red">{{linked_value}}</p>
+        {% endif %}
+        </a>;;
     }
 
     measure: female_count {
@@ -171,9 +185,9 @@
         value: ">21"
     }
 }
-    measure: percent_users_over_21 {
-      type: number
-      value_format_name: percent_0
-      sql: ${count_users_over_21}/${count} ;;
-    }
+#     measure: percent_users_over_21 {
+#       type: number
+#       value_format_name: percent_0
+#       sql: ${count_users_over_21}/${count} ;;
+#     }
   }
