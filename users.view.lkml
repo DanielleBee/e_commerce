@@ -33,10 +33,10 @@
 
     dimension: fullname {
       type: string
-      sql: CONCAT(${first_name}, ' ' ,${last_name}) ;;
+      sql: CONCAT(${first_name}, ' ,' ,${last_name}) ;;
       link: {
       label: "Drill Dashboard"
-      url: "/dashboards/2?FullName={{ value | url_encode }}"
+      url: "/dashboards/2?FullName={{ filterable_value }}"
       }
     }
 
@@ -160,13 +160,13 @@
       drill_fields: [id, first_name, last_name]
       value_format: "#,##0"
       html:
-        <a href="#drillmenu" target="_self">
-        {% if value > 50 %}
-        <p style="color:green">{{rendered_value}} <img src="https://www.freefavicon.com/freefavicons/animal/dog-152-203766.png" alt="Image result for puppy favicon" width="25" height="25" style="margin-top: 20px; margin-bottom: 19px;"></p>
+      {% if value > 50 %}
+         <a href="{{link}}">
+        <p style="color:green">{{value}} <img src="https://www.freefavicon.com/freefavicons/animal/dog-152-203766.png" alt="Image result for puppy favicon" width="25" height="25" style="margin-top: 20px; margin-bottom: 19px;"></p>
         {% else %}
-        <p style="color:red">{{linked_value}}</p>
+        <p style="color:red">{{value}}</p></a>
         {% endif %}
-        </a>;;
+        ;;
     }
 
     measure: female_count {

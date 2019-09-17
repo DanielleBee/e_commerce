@@ -105,18 +105,18 @@ THEN ${category}
 
   measure: count {
     type: count
-    drill_fields: [
-      id,
-      retail_price,
-      sku,
-      department,
-      brand,
-      name,
-      category
-    ]
+#     drill_fields: [
+#       id,
+#       retail_price,
+#       sku,
+#       department,
+#       brand,
+#       name,
+#       category
+#     ]
     link: {
       label: "Drill to Explore"
-      url: "/explore/e_commerce/products?fields=products.brand,products.id,products.retail_price,products.sku&f[products.department]={{ _filters['products.department'] | url_encode }}&f[products.brand]={{ value | url_encode }}"
+      url: "/explore/e_commerce/products?fields=products.brand,products.id,products.retail_price,products.sku&f[products.department]={{ _filters['products.department'] | url_encode }}&f[products.brand]={{products.brand._value}}"
     }
   }
 
