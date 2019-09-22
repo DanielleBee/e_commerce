@@ -177,17 +177,13 @@
         value: "f"
       }
     }
-    measure: count_users_over_21 {
-      type: count_distinct
-      sql: ${id};;
-      filters: {
-        field: age
-        value: ">21"
+    dimension: is_user_over_21 {
+      type: yesno
+      sql: ${age} > 21 ;;
     }
-}
-#     measure: percent_users_over_21 {
-#       type: number
-#       value_format_name: percent_0
-#       sql: ${count_users_over_21}/${count} ;;
-#     }
+
+    measure: percent_of_total {
+      type: percent_of_total
+      sql: ${count} ;;
+    }
   }
