@@ -22,18 +22,13 @@ explore: order_items {
 
   join: inventory_items {
     sql_on: ${inventory_items.id} = ${order_items.inventory_item_id} ;;
+    fields: []
     type: left_outer
     relationship: one_to_one
   }
 
   join: products {
     sql_on: ${products.id} = ${inventory_items.product_id} ;;
-    type: left_outer
-    relationship: many_to_one
-  }
-
-  join:  distribution_centers {
-    sql_on: ${distribution_centers.id} = ${inventory_items.distribution_center_id} ;;
     type: left_outer
     relationship: many_to_one
   }
@@ -47,7 +42,7 @@ explore: user_order_facts { }
 
 explore: users {
   view_name: users  ## Important to define the view_name in base explore if extending
-  fields: [ALL_FIELDS*, -users.distance_from_distribution_center]
+  fields: [ALL_FIELDS*]
 
 #   join: orders {
 #     type: left_outer
@@ -108,5 +103,3 @@ explore: users {
 #     relationship: many_to_one
 #   }
 # }
-
-explore:distribution_centers { }

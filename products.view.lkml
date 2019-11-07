@@ -104,6 +104,7 @@ THEN ${category}
   }
 
   measure: count {
+    label: "Number of Products"
     type: count
 #     drill_fields: [
 #       id,

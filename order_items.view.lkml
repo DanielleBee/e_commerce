@@ -105,6 +105,7 @@ view: order_items {
   }
 
   measure: count {
+    label: "Number of Items Ordered"
     type: count
     drill_fields: [
       id,
@@ -138,13 +139,26 @@ view: order_items {
 
   measure: total_profit {
     type: number
+    value_format_name: usd
     sql: ${total_sale_price} - ${products.total_retail_price} ;;
+  }
+
+  measure: percent_test  {
+    type: number
+    sql: ${total_profit}/${total_sale_price}*-1;;
+    value_format_name: percent_0
   }
 
   measure: least_expensive_item {
     type: min
     sql: ${sale_price} ;;
   }
+
+#   measure: test_measure_sum {
+#     type: number
+#     sql: ${total_profit}+${total_sale_price} ;;
+#    link:
+#   }
 
   measure: most_expensive_item {
     type: max

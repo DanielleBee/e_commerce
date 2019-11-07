@@ -41,11 +41,13 @@
     }
 
     dimension: city {
+      group_label: "Geography"
       type: string
       sql: ${TABLE}.city ;;
     }
 
     dimension: state {
+      group_label: "Geography"
       type: string
       sql: ${TABLE}.state ;;
       link: {
@@ -56,11 +58,13 @@
     }
 
     dimension: zip {
+      group_label: "Geography"
       type: zipcode
       sql: ${TABLE}.zip ;;
     }
 
     dimension: country {
+      group_label: "Geography"
       type: string
       sql: ${TABLE}.country ;;
     drill_fields: [state, city]
@@ -134,28 +138,25 @@
 
     dimension: latitude {
       type: number
+      hidden:  yes
       sql: ${TABLE}.latitude ;;
     }
 
     dimension: longitude {
       type: number
+      hidden: yes
       sql: ${TABLE}.longitude ;;
     }
 
     dimension: location {
+      group_label: "Geography"
       type: location
       sql_latitude: ${latitude} ;;
       sql_longitude: ${longitude} ;;
     }
 
-    dimension: distance_from_distribution_center {
-      type: distance
-      start_location_field: distribution_centers.location
-      end_location_field: users.location
-      units: miles
-    }
-
     measure: count {
+      label: "Number of Users"
       type: count
       drill_fields: [id, first_name, last_name]
       value_format: "#,##0"
@@ -170,6 +171,7 @@
     }
 
     measure: female_count {
+      label: "Number of Women"
       type: count_distinct
       sql: ${id} ;;
       filters: {
