@@ -34,7 +34,9 @@ explore: order_items {
   }
 }
 
-explore: products { }
+explore: products {
+  fields: [ALL_FIELDS*, -products.brand]
+}
 
 explore: orders { }
 
