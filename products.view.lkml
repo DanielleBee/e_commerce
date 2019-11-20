@@ -83,6 +83,11 @@ THEN ${category}
     sql: ${TABLE}.department ;;
   }
 
+  dimension: department2 {
+    type: string
+    sql: ${TABLE}.department ;;
+  }
+
   dimension: brand {
     type: string
     sql: ${TABLE}.brand ;;

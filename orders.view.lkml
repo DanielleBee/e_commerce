@@ -28,6 +28,39 @@ view: orders {
     sql: ${TABLE}.created_at ;;
   }
 
+####### Date Parameters Test ###########
+  parameter: date_picker {
+  type: date_time
+  allowed_value: {
+    label: "Before 2018"
+    value: "before 2018-01-01"
+  }
+  allowed_value: {
+    label: "10 Months Ago"
+    value: "10 months ago"
+    }
+    allowed_value: {
+      label: "Week to date"
+      value: "this week"
+    }
+  }
+
+#   dimension: date_with_param {
+#     label_from_parameter: date_picker
+#     sql:
+#     CASE
+#       WHEN {% parameter date_picker %} = 'Yesterday'
+#         THEN ${created_date}::VARCHAR
+#       WHEN {% parameter ${date_picker} %} = 'This Week'
+#         THEN ${created_week}::VARCHAR
+#       WHEN {% parameter date_picker %} = 'This Month'
+#         THEN ${created_month}::VARCHAR
+#       ELSE NULL
+#     END ;;
+#   }
+
+###################
+
   dimension: created_date_formatted {
     sql: ${created_date} ;;
     html: {{ rendered_value | date: "%B %d, %Y" }};;

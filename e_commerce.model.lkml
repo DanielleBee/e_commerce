@@ -38,7 +38,16 @@ explore: products {
   fields: [ALL_FIELDS*, -products.brand]
 }
 
-explore: orders { }
+explore: orders {
+  sql_always_where: {% condition orders.date_picker %} orders.created_at {% endcondition %} ;;
+}
+
+# sql_always_where: {% if orders.date_picker._parameter_value == 'before 2018-01-01' %}
+# orders.created_date < (CONVERT_TZ(TIMESTAMP('2018-01-01'),'America/Los_Angeles','UTC')
+# {% else %}
+# orders.created_date >= ((CONVERT_TZ(DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(CONVERT_TZ(NOW(),'UTC','America/Los_Angeles')),'%Y-%m-01')),INTERVAL -10 month),'America/Los_Angeles','UTC'))) AND (orders.created_at ) < ((CONVERT_TZ(DATE_ADD(DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(CONVERT_TZ(NOW(),'UTC','America/Los_Angeles')),'%Y-%m-01')),INTERVAL -10 month),INTERVAL 1 month),'America/Los_Angeles','UTC')))
+# {% endif %}
+# ;;
 
 explore: user_order_facts { }
 
