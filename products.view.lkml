@@ -1,8 +1,64 @@
 view: products {
   sql_table_name: demo_db.products ;;
 
-##Parameters Session from Office Hours on August 22
+############## PARAMETERS TEST FOR KHALIL - where if only one department selected on dashboard tile the other will show null
+
+#parameter filter.  The dashboard filter of type: field will map to this field
+  parameter: main_filter {
+    description: "Parameter test to see if we can hide results of the value that's not selected"
+    type: string
+    allowed_value: {
+      label: "SKU - 0001"
+      value: "00014335f9fbc45859b87fb101a6b7ab"
+    }
+    allowed_value: {
+      label: "SKU - 0955"
+      value: "09557786d8d9d95a14605caa550d22c9"
+    }
+    allowed_value: {
+      label: "SKU - 0001 & SKU - 0955"
+      value: "Both"
+    }
+  }
+
+# Sets of 2 dimensions, one for OES and another for OEI.  We use the liquid variable {{ main_filter._parameter_value  }} to insert the "value" from the Parameter Filter.  Then we do the opposite CASE WHEN condition for the duplicate dimension
+  dimension: department_0001 {
+    label: "Dept - SKU - 0001"
+    type: string
+    sql:  CASE WHEN  {{ main_filter._parameter_value  }} = '00014335f9fbc45859b87fb101a6b7ab' THEN ${department}
+          WHEN {{ main_filter._parameter_value  }} = 'Both' Then ${department}
+          ELSE NULL END
+        ;;
+  }
+  dimension: department_0955 {
+    label: "Dept - SKU - 0955"
+    type: string
+    sql:  CASE WHEN  {{ main_filter._parameter_value  }} = '09557786d8d9d95a14605caa550d22c9' THEN ${department}
+          WHEN {{ main_filter._parameter_value  }} = 'Both' Then ${department}
+          ELSE NULL END
+        ;;
+  }
+  dimension: sku_0001 {
+    label: "sku - SKU - 0001"
+    type: string
+    sql:  CASE WHEN  {{ main_filter._parameter_value  }} = '00014335f9fbc45859b87fb101a6b7ab' THEN ${sku}
+          WHEN {{ main_filter._parameter_value  }} = 'Both' Then ${sku}
+          ELSE NULL END
+        ;;
+  }
+  dimension: sku_0955 {
+    label: "sku - SKU - 0955"
+    type: string
+    sql:  CASE WHEN  {{ main_filter._parameter_value  }} = '09557786d8d9d95a14605caa550d22c9' THEN ${sku}
+          WHEN {{ main_filter._parameter_value  }} = 'Both' Then ${sku}
+          ELSE NULL END
+        ;;
+  }
+
+
+##############  Parameters Session from Office Hours on August 22  ##################
   parameter: select_product_detail {
+    description: "Product granularity with parameter set up with allowed values"
     type: unquoted
     default_value: "department"
     allowed_value: {
@@ -21,6 +77,7 @@ view: products {
 
   dimension: product_hierarchy {
     label_from_parameter: select_product_detail
+    description: "To be used with the Select Product Detail parameter - {{ select_product_detail._parameter_value }} in sql"
     type: string
     sql: ${TABLE}.{{ select_product_detail._parameter_value }}
       ;;
@@ -29,6 +86,7 @@ view: products {
 ##OR WE CAN SET THE PARAMETER THIS WAY
   dimension: product_hierarchy_better {
     label_from_parameter: select_product_detail
+    description: "To be used with the Select Product Detail parameter - conditional logic with liquid variables in the sql"
     type: string
     sql:
     {% if select_product_detail._parameter_value == 'department' %}
@@ -42,6 +100,7 @@ view: products {
 
 ##Templated Filter Examples:
   filter: choose_a_category_to_compare {
+    description: "Templated filter example to compare one category vs all others"
     type: string
     suggest_explore: products
     suggest_dimension: products.category
@@ -59,7 +118,7 @@ THEN ${category}
         END
         ;;
   }
-##End of Office Hours Parameters & Templated Filters Example
+############## End of Office Hours Parameters & Templated Filters Example #################
 
   dimension: id {
     primary_key: yes
@@ -79,11 +138,6 @@ THEN ${category}
   }
 
   dimension: department {
-    type: string
-    sql: ${TABLE}.department ;;
-  }
-
-  dimension: department2 {
     type: string
     sql: ${TABLE}.department ;;
   }
