@@ -22,19 +22,19 @@ view: products {
   }
 
 # Sets of 2 dimensions, one for OES and another for OEI.  We use the liquid variable {{ main_filter._parameter_value  }} to insert the "value" from the Parameter Filter.  Then we do the opposite CASE WHEN condition for the duplicate dimension
-  dimension: department_0001 {
-    label: "Dept - SKU - 0001"
+  dimension: name_0001 {
+    label: "Name SKU - 0001"
     type: string
-    sql:  CASE WHEN  {{ main_filter._parameter_value  }} = '00014335f9fbc45859b87fb101a6b7ab' THEN ${department}
-          WHEN {{ main_filter._parameter_value  }} = 'Both' Then ${department}
+    sql:  CASE WHEN  {{ main_filter._parameter_value  }} = '00014335f9fbc45859b87fb101a6b7ab' THEN ${name}
+          WHEN {{ main_filter._parameter_value  }} = 'Both' Then ${name}
           ELSE NULL END
         ;;
   }
-  dimension: department_0955 {
-    label: "Dept - SKU - 0955"
+  dimension: name_0955 {
+    label: "Name SKU - 0955"
     type: string
-    sql:  CASE WHEN  {{ main_filter._parameter_value  }} = '09557786d8d9d95a14605caa550d22c9' THEN ${department}
-          WHEN {{ main_filter._parameter_value  }} = 'Both' Then ${department}
+    sql:  CASE WHEN  {{ main_filter._parameter_value  }} = '09557786d8d9d95a14605caa550d22c9' THEN ${name}
+          WHEN {{ main_filter._parameter_value  }} = 'Both' Then ${name}
           ELSE NULL END
         ;;
   }
@@ -154,7 +154,7 @@ THEN ${category}
 
   dimension: name {
     type: string
-    sql: ${TABLE}.name ;;
+    sql: ${TABLE}.item_name ;;
   }
 
   dimension: category {
