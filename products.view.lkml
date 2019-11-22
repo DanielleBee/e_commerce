@@ -23,7 +23,7 @@ view: products {
 
 # Sets of 2 dimensions, one for OES and another for OEI.  We use the liquid variable {{ main_filter._parameter_value  }} to insert the "value" from the Parameter Filter.  Then we do the opposite CASE WHEN condition for the duplicate dimension
   dimension: name_0001 {
-    label: "Name SKU - 0001"
+    label: "name"
     type: string
     sql:  CASE WHEN  {{ main_filter._parameter_value  }} = '00014335f9fbc45859b87fb101a6b7ab' THEN ${name}
           WHEN {{ main_filter._parameter_value  }} = 'Both' Then ${name}
@@ -31,7 +31,7 @@ view: products {
         ;;
   }
   dimension: name_0955 {
-    label: "Name SKU - 0955"
+    label: "name"
     type: string
     sql:  CASE WHEN  {{ main_filter._parameter_value  }} = '09557786d8d9d95a14605caa550d22c9' THEN ${name}
           WHEN {{ main_filter._parameter_value  }} = 'Both' Then ${name}
@@ -39,7 +39,7 @@ view: products {
         ;;
   }
   dimension: sku_0001 {
-    label: "sku - SKU - 0001"
+    label: "sku"
     type: string
     sql:  CASE WHEN  {{ main_filter._parameter_value  }} = '00014335f9fbc45859b87fb101a6b7ab' THEN ${sku}
           WHEN {{ main_filter._parameter_value  }} = 'Both' Then ${sku}
@@ -47,14 +47,14 @@ view: products {
         ;;
   }
   dimension: sku_0955 {
-    label: "sku - SKU - 0955"
+    label: "sku"
     type: string
     sql:  CASE WHEN  {{ main_filter._parameter_value  }} = '09557786d8d9d95a14605caa550d22c9' THEN ${sku}
           WHEN {{ main_filter._parameter_value  }} = 'Both' Then ${sku}
           ELSE NULL END
         ;;
   }
-
+################# End Parameters Test for Khalil ########################
 
 ##############  Parameters Session from Office Hours on August 22  ##################
   parameter: select_product_detail {

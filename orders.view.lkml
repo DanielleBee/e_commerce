@@ -30,34 +30,34 @@ view: orders {
 
 ####### Date Parameters Test ###########
   parameter: date_picker {
-  type: date_time
+  type: unquoted
   allowed_value: {
     label: "Before 2018"
-    value: "before 2018-01-01"
+    value: "Before_2018"
   }
   allowed_value: {
     label: "10 Months Ago"
-    value: "10 months ago"
+    value: "10_months_ago"
     }
     allowed_value: {
       label: "Week to date"
-      value: "this week"
+      value: "this_week"
     }
   }
 
-#   dimension: date_with_param {
-#     label_from_parameter: date_picker
-#     sql:
-#     CASE
-#       WHEN {% parameter date_picker %} = 'Yesterday'
-#         THEN ${created_date}::VARCHAR
-#       WHEN {% parameter ${date_picker} %} = 'This Week'
-#         THEN ${created_week}::VARCHAR
-#       WHEN {% parameter date_picker %} = 'This Month'
-#         THEN ${created_month}::VARCHAR
-#       ELSE NULL
-#     END ;;
-#   }
+  dimension: date_with_param {
+    label_from_parameter: date_picker
+    sql:
+    CASE
+      WHEN {% parameter date_picker %} = 'before 2018-01-01'
+        THEN ${created_date}::VARCHAR
+      WHEN {% parameter date_picker %} = 'This Week'
+        THEN ${created_week}
+      WHEN {% parameter date_picker %} = '10 months ago'
+        THEN ${created_date}
+      ELSE NULL
+    END ;;
+  }
 
 ###################
 
