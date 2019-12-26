@@ -1,5 +1,11 @@
 connection: "thelook"
 include: "*.view"
+include: "*dashboard.lookml"
+
+# datagroup: orders_datagroup {
+#   sql_trigger: SELECT COUNT(*) FROM ${orders_derived_table.SQL_TABLE_NAME};;
+#   max_cache_age: "24 hours"
+# }
 
 explore: order_items {
   join: orders {
@@ -51,11 +57,84 @@ explore: orders {
 
 # sql_always_where: {% condition orders.date_picker %} orders.created_at {% endcondition %} ;;
 
+#{% elsif orders.date_picker._parameter_value == 'this_week' %}
+#     ${created_date} >= ((CONVERT_TZ(TIMESTAMP(DATE(DATE_ADD(DATE(CONVERT_TZ(NOW(),'UTC','America/Los_Angeles')),INTERVAL (0 - MOD((DAYOFWEEK(DATE(CONVERT_TZ(NOW(),'UTC','America/Los_Angeles'))) - 1) - 1 + 7, 7)) day))),'America/Los_Angeles','UTC'))) AND (orders.created_at ) < ((CONVERT_TZ(DATE_ADD(TIMESTAMP(DATE(DATE_ADD(DATE(CONVERT_TZ(NOW(),'UTC','America/Los_Angeles')),INTERVAL (0 - MOD((DAYOFWEEK(DATE(CONVERT_TZ(NOW(),'UTC','America/Los_Angeles'))) - 1) - 1 + 7, 7)) day))),INTERVAL 1 week),'America/Los_Angeles','UTC')))
+
 explore: user_order_facts { }
 
-explore: users {
-  view_name: users  ## Important to define the view_name in base explore if extending
-  fields: [ALL_FIELDS*]
+# explore: users {
+#   view_name: users  ## Important to define the view_name in base explore if extending
+#   fields: [ALL_FIELDS*]
+
+
+############### COHORT ANALYSIS TEST #################
+  explore: users {
+    join: orders {
+      sql_on: ${orders.user_id} = ${users.id} ;;
+      relationship : one_to_many
+    }
+
+    join: order_items {
+      sql_on: ${order_items.order_id} = ${orders.id} ;;
+      relationship : one_to_many
+    }
+
+    join: user_cohort_size {
+      sql_on: ${user_cohort_size.created_month} = ${users.created_month};;
+      relationship: many_to_one
+    }
+
+    join: inventory_items {
+      sql_on: ${inventory_items.id} = ${order_items.inventory_item_id} ;;
+      fields: []
+      type: left_outer
+      relationship: one_to_one
+    }
+
+    join: products {
+      sql_on: ${products.id} = ${inventory_items.product_id} ;;
+      type: left_outer
+      relationship: many_to_one
+    }
+    }
+
+####### Parameterized derived table to calculate cohort size
+    view: user_cohort_size {
+      derived_table: {
+      sql:
+       SELECT
+       DATE_FORMAT(CONVERT_TZ(u.created_at,'UTC','America/Los_Angeles'),'%Y-%m') AS created_month
+       , COUNT(*) as cohort_size
+       FROM users u
+       WHERE
+       -- Insert filters here using a condition statement, you may add as many filters as desired
+       {% condition users.age %} u.age {% endcondition %}
+       AND {% condition users.state %} u.state {% endcondition %}
+       GROUP BY 1 ;;
+      }
+
+        dimension: created_month {
+          primary_key: yes
+        }
+
+        dimension: cohort_size {
+          type: number
+        }
+
+        measure: total_cohort_size {
+          type: sum
+          sql: ${cohort_size} ;;
+        }
+
+        measure: total_revenue_over_total_cohort_size {
+          type: number
+          sql: ${order_items.total_sale_price} / ${total_cohort_size} ;;
+          value_format_name: usd
+        }
+}
+
+
+
 
 #   join: orders {
 #     type: left_outer
@@ -81,12 +160,7 @@ explore: users {
 #     relationship: many_to_one
 #   }
 #
-#   join:  distribution_centers {
-#     sql_on: ${distribution_centers.id} = ${inventory_items.distribution_center_id} ;;
-#     type: left_outer
-#     relationship: many_to_one
-# }
-}
+#}
 
 ##### Basic example of extended explore.
 # explore: users_extended {

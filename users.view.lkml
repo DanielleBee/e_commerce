@@ -75,6 +75,11 @@
       sql: ${TABLE}.age ;;
     }
 
+    dimension: age2 {
+      type: number
+      sql: ${TABLE}.age - 10 ;;
+    }
+
     dimension: age_tier {
       type: tier
       tiers: [0, 10, 20, 30, 40, 50, 60, 70, 80]
@@ -188,4 +193,66 @@
       type: percent_of_total
       sql: ${count} ;;
     }
+
+#############################
+    parameter: tier_bucket_size {
+      type: string
+    }
+
+    parameter: dimension_picker {
+      type: unquoted
+      allowed_value: {
+        value: "Age"
+      }
+
+      allowed_value: {
+        value: "Age2"
+      }
+    }
+
+    dimension: dynamic_tier {
+#       type: number
+      sql: {% assign my_array = tier_bucket_size._parameter_value | remove: "'" | split: "," %}
+      {% assign sort = '-1' %}
+      {% assign last_group_max_label = ' 0' %}
+
+      {% if dimension_picker._parameter_value == 'age' %}
+
+        case
+        {%for element in my_array%}
+        {% assign sort = sort | plus: 1 %}
+
+        when ${age}<{{element}} then '{{last_group_max_label}} <= {{dimension_picker._parameter_value}} < {{element}}'
+        {% assign last_group_max_label = element %}
+        {%endfor%}
+        {% assign sort = sort | plus: 1 %}
+
+        when ${age}>={{last_group_max_label}} then '{{dimension_picker._parameter_value}}>= {{last_group_max_label}}'
+
+        end
+
+      {% elsif dimension_picker._parameter_value == 'age2' %}
+
+      case
+        {%for element in my_array%}
+        {% assign sort = sort | plus: 1 %}
+
+        when ${age2}<{{element}} then '{{last_group_max_label}} <= {{dimension_picker._parameter_value}} < {{element}}'
+        {% assign last_group_max_label = element %}
+        {%endfor%}
+        {% assign sort = sort | plus: 1 %}
+
+        when ${age2}>={{last_group_max_label}} then '{{dimension_picker._parameter_value}}>= {{last_group_max_label}}'
+
+        end
+
+      {% endif %}
+
+      ;;
+
+    }
+
+# {% parameter dimension_picker._parameter_value %}
+# TABLE.{% parameter dimension_picker %}
+
   }

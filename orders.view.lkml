@@ -28,6 +28,12 @@ view: orders {
     sql: ${TABLE}.created_at ;;
   }
 
+  dimension_group: created_tz_test {
+    type: time
+    sql: CONVERT_TZ(${created_raw}, 'utc', 'Americas/New_York');;
+    }
+
+
 ####### Date Parameters Test ###########
   parameter: date_picker {
   type: unquoted
@@ -45,19 +51,19 @@ view: orders {
     }
   }
 
-  dimension: date_with_param {
-    label_from_parameter: date_picker
-    sql:
-    CASE
-      WHEN {% parameter date_picker %} = 'before 2018-01-01'
-        THEN ${created_date}::VARCHAR
-      WHEN {% parameter date_picker %} = 'This Week'
-        THEN ${created_week}
-      WHEN {% parameter date_picker %} = '10 months ago'
-        THEN ${created_date}
-      ELSE NULL
-    END ;;
-  }
+#   dimension: date_with_param {
+#     label_from_parameter: date_picker
+#     sql:
+#     CASE
+#       WHEN {% parameter date_picker %} = 'before 2018-01-01'
+#         THEN ${created_date}::VARCHAR
+#       WHEN {% parameter date_picker %} = 'This Week'
+#         THEN ${created_week}
+#       WHEN {% parameter date_picker %} = '10 months ago'
+#         THEN ${created_date}
+#       ELSE NULL
+#     END ;;
+#   }
 
 ###################
 
@@ -76,6 +82,57 @@ view: orders {
     sql: ${status} = 'complete' ;;
   }
 
+############# THIS YEAR LOGIC ##############
+
+  filter: date_filter {
+    type: date
+  }
+  dimension: this_year_logic {
+    group_label: "Test"
+    type: yesno
+    sql: {% condition date_filter %} ${created_date} {% endcondition %}
+      ;;
+  }
+  measure: count_this_year {
+    type: count
+    filters: {
+      field: this_year_logic
+      value: "yes"
+    }
+  }
+
+############# LAST YEAR LOGIC ##############
+
+    dimension: last_year_logic {
+      type: yesno
+      sql: {% condition date_filter %} DATE_ADD (${created_date}, interval -1 year) {% endcondition %}
+        ;;
+    }
+    measure: count_last_year {
+      type: count
+      filters: {
+        field: last_year_logic
+        value: "yes"
+      }
+    }
+
+
+
+dimension_group: interval_minus_1_year {
+  type: time
+  datatype: datetime
+  timeframes: [
+    raw,
+    time,
+    date,
+    week,
+    month,
+    quarter,
+    year
+  ]
+  sql: interval(${TABLE}.created_at,-1) ;;
+}
+
   measure: most_recent_order {
     type: date
     sql: MAX(${created_date}) ;;
@@ -83,5 +140,6 @@ view: orders {
 
   measure: count {
     type: count
+    drill_fields: [user_id,users.age]
   }
 }

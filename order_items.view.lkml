@@ -110,7 +110,6 @@ view: order_items {
     drill_fields: [
       id,
       created_time,
-      shipped_time,
       delivered_time,
       returned_time,
       sale_price,
@@ -135,6 +134,8 @@ view: order_items {
   measure: average_sale_price {
     type: average
     sql: ${sale_price} ;;
+    #value_format: "0.0,\" K\""
+    value_format_name: usd
   }
 
   measure: total_profit {

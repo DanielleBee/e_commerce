@@ -1,5 +1,7 @@
 view: user_order_facts {
   derived_table: {
+#     datagroup_trigger: orders_datagroup
+#     indexes: ["customer_id", "first_order_date"]
     sql:
       SELECT
         user_id,
