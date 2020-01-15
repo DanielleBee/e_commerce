@@ -13,12 +13,6 @@ view: inventory_items {
     sql: ${TABLE}.product_id ;;
   }
 
-  dimension: distribution_center_id {
-    type: number
-    hidden: yes
-    sql: ${TABLE}.product_distribution_center_id ;;
-  }
-
   dimension_group: created {
     type: time
     timeframes: [

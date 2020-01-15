@@ -23,16 +23,29 @@ view: orders {
       week,
       month,
       quarter,
-      year
-    ]
-    sql: ${TABLE}.created_at ;;
+      year]
+    sql: ${TABLE}.created_at;;
+  }
+
+  dimension: created_date_formatted {
+    sql: ${created_date} ;;
+    html: {{ rendered_value | date: "%B %d, %Y" }};;
   }
 
   dimension_group: created_tz_test {
     type: time
-    sql: CONVERT_TZ(${created_raw}, 'utc', 'Americas/New_York');;
+    sql: CONVERT_TZ(${created_raw}, 'UTC', 'Americas/New_York');;
     }
 
+  dimension: status {
+    type: string
+    sql: ${TABLE}.status ;;
+  }
+
+  dimension: is_complete {
+    type: yesno
+    sql: ${status} = 'complete' ;;
+  }
 
 ####### Date Parameters Test ###########
   parameter: date_picker {
@@ -51,72 +64,39 @@ view: orders {
     }
   }
 
-#   dimension: date_with_param {
-#     label_from_parameter: date_picker
-#     sql:
-#     CASE
-#       WHEN {% parameter date_picker %} = 'before 2018-01-01'
-#         THEN ${created_date}::VARCHAR
-#       WHEN {% parameter date_picker %} = 'This Week'
-#         THEN ${created_week}
-#       WHEN {% parameter date_picker %} = '10 months ago'
-#         THEN ${created_date}
-#       ELSE NULL
-#     END ;;
-#   }
-
-###################
-
-  dimension: created_date_formatted {
-    sql: ${created_date} ;;
-    html: {{ rendered_value | date: "%B %d, %Y" }};;
-  }
-
-  dimension: status {
-    type: string
-    sql: ${TABLE}.status ;;
-  }
-
-  dimension: is_complete {
-    type: yesno
-    sql: ${status} = 'complete' ;;
-  }
-
 ############# THIS YEAR LOGIC ##############
 
-  filter: date_filter {
-    type: date
-  }
-  dimension: this_year_logic {
-    group_label: "Test"
-    type: yesno
-    sql: {% condition date_filter %} ${created_date} {% endcondition %}
-      ;;
-  }
-  measure: count_this_year {
-    type: count
-    filters: {
-      field: this_year_logic
-      value: "yes"
-    }
-  }
+#   filter: date_filter {
+#     type: date
+#   }
+#   dimension: this_year_logic {
+#     group_label: "Test"
+#     type: yesno
+#     sql: {% condition date_filter %} ${created_date} {% endcondition %}
+#       ;;
+#   }
+#   measure: count_this_year {
+#     type: count
+#     filters: {
+#       field: this_year_logic
+#       value: "yes"
+#     }
+#   }
 
 ############# LAST YEAR LOGIC ##############
 
-    dimension: last_year_logic {
-      type: yesno
-      sql: {% condition date_filter %} DATE_ADD (${created_date}, interval -1 year) {% endcondition %}
-        ;;
-    }
-    measure: count_last_year {
-      type: count
-      filters: {
-        field: last_year_logic
-        value: "yes"
-      }
-    }
-
-
+#     dimension: last_year_logic {
+#       type: yesno
+#       sql: {% condition date_filter %} DATE_ADD (${created_date}, interval -1 year) {% endcondition %}
+#         ;;
+#     }
+#     measure: count_last_year {
+#       type: count
+#       filters: {
+#         field: last_year_logic
+#         value: "yes"
+#       }
+#     }
 
 dimension_group: interval_minus_1_year {
   type: time
@@ -133,13 +113,149 @@ dimension_group: interval_minus_1_year {
   sql: interval(${TABLE}.created_at,-1) ;;
 }
 
+####################
+filter: date_filter_test {
+  type: date
+}
+###################
+
   measure: most_recent_order {
     type: date
     sql: MAX(${created_date}) ;;
   }
 
+  measure: first_order {
+    type: date
+    sql: MIN(${created_date}) ;;
+  }
+
+  measure: running_total_count {
+    type: running_total
+    sql: ${count} ;;
+  }
+#
+#   measure: count_filtered_meas {
+#     type: count
+#     drill_fields: [created_date,count]
+#     sql: ${id} ;;
+#     filters:  {
+#       field: order_items.count
+#       value: ">1"
+#     }
+#     }
+
   measure: count {
     type: count
-    drill_fields: [user_id,users.age]
+    drill_fields: [created_date,count]
+    link: {
+      label: "Drill Details"
+      url: "
+      {% assign vis_config = '{
+        \"type\": \"looker_bar\",
+        \"x_axis_gridlines\" : false,
+        \"y_axis_gridlines\" : true,
+        \"show_view_names\" : false,
+        \"show_y_axis_labels\" : true,
+        \"show_y_axis_ticks\" : true,
+        \"show_x_axis_label\" : true,
+        \"show_x_axis_ticks\" : true,
+        \"y_axis_scale_mode\" : \"linear\",
+        \"plot_size_by_field\" : false,
+        \"x_axis_reversed\" : false,
+        \"y_axis_reversed\" : false,
+        \"y_axis_tick_density\" : \"default\",
+        \"y_axis_tick_density_custom\" : 5,
+        \"limit_displayed_rows\" : false,
+        \"legend_position\" : \"center\",
+        \"font_size\" : \"10px\",
+        \"series_types\" : {},
+        \"point_style\" : \"none\",
+        \"show_value_labels\" : true,
+        \"label_density\" : 25,
+        \"label_color\" : \"#A0318C\",
+        \"x_axis_scale\": \"auto\",
+        \"y_axis_combined\" : true,
+        \"ordering\" : \"none\",
+        \"show_null_labels\" : false,
+        \"show_totals_labels\" : false,
+        \"show_silhouette\" : false,
+        \"totals_color\" : \"#808080\",
+        \"collection_id\" : \"9d1da669-a6b4-4a4f-8519-3ea8723b79b5\",
+        \"palette_id\" : \"53f185d2-c73c-4aa7-9b3e-c56a440c3743\",
+        \"series_colors\" : {
+          \"orders.count\" : \"#74A09F\"
+         }
+      }' %}
+      {{ link }}&vis_config={{ vis_config | encode_uri }}&toggle=vis,pik"
+    }
   }
+
+#         \"trellis\": \"\",
+#         \"stacking: '\"\",
+#         \"color_application\" : {
+#           \"collection_id\" : 9d1da669-a6b4-4a4f-8519-3ea8723b79b5,
+#           \"palette_id\" : 53f185d2-c73c-4aa7-9b3e-c56a440c3743
+#         }
+
+######################### Multiple Values Parameter / Templated Filter Test ###############
+#   parameter: partner_id {
+#     type: unquoted
+#   }
+#
+#   parameter: time_value {
+#     type: number
+#   }
+#
+#   parameter: time_type {
+#     type: unquoted
+#     allowed_value: { value: "DAY" }
+#     allowed_value: { value: "MONTH" }
+#     allowed_value: { value: "YEAR" }
+#   }
+#
+#
+#   dimension: has_checkins_at_partnerX {
+#     description: "Member has checked in at least once at a specified partner in the past 3 months"
+#     type: yesno
+#     sql:${id} IN (SELECT member_id
+#                               FROM checkins
+#                               WHERE location_id IN ({% parameter partner_id %})
+#                               AND CAST(datetime as date) BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL {% parameter time_value %} {% parameter time_type %})  AND CURRENT_DATE()) ;;
+#   }
+#
+#   dimension: has_urbangym_checkins {
+#     description: "Member has checked in at least once at an UrbanGym partner in the past 3 months"
+#     type: yesno
+#     sql:${id} IN (SELECT member_id
+#                               FROM checkins
+#                               WHERE location_id IN (540,578,621,652,1744,3630,3631,14472,15618,15619)
+#                               AND CAST(datetime as date) BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 3 MONTH)  AND CURRENT_DATE()) ;;
+#   }
+
+  filter: order_id_picker {
+    type: string
+  }
+
+  parameter: time_value {
+    type: number
+  }
+
+  parameter: time_type {
+    type: unquoted
+    allowed_value: { value: "DAY" }
+    allowed_value: { value: "MONTH" }
+    allowed_value: { value: "YEAR" }
+  }
+
+
+  dimension: test_dimension {
+#     description: "Member has checked in at least once at a specified partner in the past 3 months"
+    type: yesno
+    sql:${id} IN (SELECT id
+                              FROM users
+                              WHERE {% condition order_id_picker %} orders.id {% endcondition %}
+                              AND CAST(${created_raw} as date) BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL {% parameter time_value %} {% parameter time_type %})  AND CURRENT_DATE()) ;;
+  }
+
+
 }

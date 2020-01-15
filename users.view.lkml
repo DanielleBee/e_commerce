@@ -26,6 +26,20 @@
       sql: ${TABLE}.first_name ;;
     }
 
+#### sum a count_distinct test using a case/when
+    measure: distinct_first_names  {
+      type: count_distinct
+      sql: ${first_name} ;;
+    }
+
+    measure: sum_distinct_first_names{
+      type: sum_distinct
+      sql_distinct_key: ${id} ;;
+      sql: ${first_name} ;;
+    }
+
+
+#### end test
     dimension: last_name {
       type: string
       sql: ${TABLE}.last_name ;;
@@ -168,7 +182,7 @@
       html:
       {% if value > 50 %}
          <a href="{{link}}">
-        <p style="color:green">{{value}} <img src="https://www.freefavicon.com/freefavicons/animal/dog-152-203766.png" alt="Image result for puppy favicon" width="25" height="25" style="margin-top: 20px; margin-bottom: 19px;"></p>
+        <p style="color:green">{{value}} </p>
         {% else %}
         <p style="color:red">{{value}}</p></a>
         {% endif %}
@@ -184,6 +198,7 @@
         value: "f"
       }
     }
+
     dimension: is_user_over_21 {
       type: yesno
       sql: ${age} > 21 ;;

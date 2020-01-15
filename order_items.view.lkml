@@ -19,48 +19,6 @@ view: order_items {
     sql: ${TABLE}.inventory_item_id ;;
   }
 
-  dimension_group: created {
-    type: time
-    timeframes: [
-      raw,
-      time,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
-    sql: ${TABLE}.created_at ;;
-  }
-
-  dimension_group: shipped {
-    type: time
-    timeframes: [
-      raw,
-      time,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
-    sql: ${TABLE}.shipped_at ;;
-  }
-
-  dimension_group: delivered {
-    type: time
-    timeframes: [
-      raw,
-      time,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
-    sql: ${TABLE}.delivered_at ;;
-  }
-
   dimension_group: returned {
     type: time
     timeframes: [
@@ -77,8 +35,9 @@ view: order_items {
 
   dimension: sale_price {
     type: number
-    sql: ${TABLE}.sale_price ;;
-    value_format_name: usd
+    sql: (${TABLE}.sale_price) ;;
+#     value_format_name: usd
+  value_format: "#,##0"
   }
 
   dimension: price_range {
@@ -109,8 +68,6 @@ view: order_items {
     type: count
     drill_fields: [
       id,
-      created_time,
-      delivered_time,
       returned_time,
       sale_price,
       status,
@@ -124,12 +81,26 @@ view: order_items {
     value_format_name: usd
   }
 
+############date templated filter test################
+  dimension: date_satisfies_filter {
+    type: yesno
+#     hidden: yes
+    sql: {% condition orders.date_filter_test %} ${orders.created_date} {% endcondition %} ;;
+  }
+
+
   measure: total_sale_price {
     type: sum
     sql: ${sale_price} ;;
     value_format_name: usd
-    html: <center>{{rendered_value}}</center> ;;
+#     html: <center>{{rendered_value}}</center> ;;
+    filters: {
+      field: date_satisfies_filter
+      value: "yes"
+    }
   }
+#####################
+
 
   measure: average_sale_price {
     type: average
@@ -165,4 +136,46 @@ view: order_items {
     type: max
     sql: ${sale_price} ;;
   }
+
+##### RUNNING TOTALS TEST ###########
+
+parameter:  running_total_metric_selector {
+  type: string
+  allowed_value: {
+    label: "Total Sale Price"
+    value: "total_sale_price"
+  }
+  allowed_value: {
+    label: "Total Number of Orders"
+    value: "total_number_of_orders"
+  }
+  allowed_value: {
+    label: "Average Sale Price per Order"
+    value: "average"
+  }
+}
+
+measure: running_total_sale_price {
+  type: running_total
+  sql: ${total_sale_price} ;;
+  value_format_name: usd_0
+}
+
+measure: average_order_value {
+  type: number
+  sql: (${order_items.total_sale_price}/${orders.count}) ;;
+  value_format_name: usd_0
+}
+
+measure: running_total_measure {
+  type: running_total
+  value_format: "#,##0.00"
+  direction: "column"
+  sql: CASE
+        WHEN {% parameter running_total_metric_selector %} = 'total_number_of_orders' THEN ${orders.count}
+        WHEN {% parameter running_total_metric_selector %} = 'total_sale_price' THEN ${order_items.total_sale_price}
+        WHEN {% parameter running_total_metric_selector %} = 'average_order_value' THEN (${order_items.total_sale_price}/${orders.count})
+        ELSE NULL
+END ;;
+}
 }

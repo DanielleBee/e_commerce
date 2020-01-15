@@ -7,6 +7,11 @@ include: "*dashboard.lookml"
 #   max_cache_age: "24 hours"
 # }
 
+datagroup: daily_refresh {
+  sql_trigger: SELECT currentdate() ;;
+  max_cache_age: "24 hours"
+}
+
 explore: order_items {
   join: orders {
   sql_on: ${orders.id} = ${order_items.order_id};;
@@ -18,6 +23,12 @@ explore: order_items {
     sql_on: ${users.id} = ${orders.user_id} ;;
     type: left_outer
     relationship: many_to_one
+  }
+
+  join: min_max_order_dates {
+    sql_on: ${min_max_order_dates.id}=${orders.user_id} ;;
+    type: left_outer
+    relationship: one_to_many
   }
 
   join: user_order_facts {
@@ -45,14 +56,14 @@ explore: products {
 }
 
 explore: orders {
-  sql_always_where:
-  {% if orders.date_picker._parameter_value == 'Before_2018' %}
-    ${created_date} < (CONVERT_TZ(TIMESTAMP('2018-01-01'),'America/Los_Angeles','UTC'))
-  {% elsif orders.date_picker._parameter_value == '10_months_ago' %}
-    ${created_date} >= ((CONVERT_TZ(DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(CONVERT_TZ(NOW(),'UTC','America/Los_Angeles')),'%Y-%m-01')),INTERVAL -10 month),'America/Los_Angeles','UTC'))) AND (orders.created_at ) < ((CONVERT_TZ(DATE_ADD(DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(CONVERT_TZ(NOW(),'UTC','America/Los_Angeles')),'%Y-%m-01')),INTERVAL -10 month),INTERVAL 1 month),'America/Los_Angeles','UTC')))
-  {% else 1=1 %}
-  {% endif %}
-;;
+#   sql_always_where:
+#   {% if orders.date_picker._parameter_value == 'Before_2018' %}
+#     ${created_date} < (CONVERT_TZ(TIMESTAMP('2018-01-01'),'America/Los_Angeles','UTC'))
+#   {% elsif orders.date_picker._parameter_value == '10_months_ago' %}
+#     ${created_date} >= ((CONVERT_TZ(DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(CONVERT_TZ(NOW(),'UTC','America/Los_Angeles')),'%Y-%m-01')),INTERVAL -10 month),'America/Los_Angeles','UTC'))) AND (orders.created_at ) < ((CONVERT_TZ(DATE_ADD(DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(CONVERT_TZ(NOW(),'UTC','America/Los_Angeles')),'%Y-%m-01')),INTERVAL -10 month),INTERVAL 1 month),'America/Los_Angeles','UTC')))
+#   {% else 1=1 %}
+#   {% endif %}
+# ;;
 }
 
 # sql_always_where: {% condition orders.date_picker %} orders.created_at {% endcondition %} ;;
