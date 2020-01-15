@@ -129,6 +129,8 @@ filter: date_filter_test {
     sql: MIN(${created_date}) ;;
   }
 
+#comment
+
   measure: running_total_count {
     type: running_total
     sql: ${count} ;;
