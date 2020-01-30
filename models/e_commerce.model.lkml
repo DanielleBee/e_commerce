@@ -1,6 +1,8 @@
 connection: "thelook"
-include: "*.view"
-include: "*dashboard.lookml"
+# include: "*.view"
+# include: "*dashboard.lookml"
+include: "/**/*.view"
+include: "/**/*.dashboard.lookml"
 
 # datagroup: orders_datagroup {
 #   sql_trigger: SELECT COUNT(*) FROM ${orders_derived_table.SQL_TABLE_NAME};;

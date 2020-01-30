@@ -99,6 +99,60 @@ view: order_items {
       value: "yes"
     }
   }
+
+################ Conditional Filtered Measure ########
+
+#   measure: total_sale_price_conditional_filter2 {
+#     type: number
+#     sql: {% if order_items.returned_date._in_query %} SUM(order_items.sale_price)
+#     {% elsif orders.created_date._in_query and orders.status == 'cancelled' %} SUM(order_items.sale_price)
+#     {% else %} SUM(order_items.sale_price)
+#     {% endif %};;
+#     value_format_name: usd
+#   }
+
+  measure: total_sale_price_conditional_filter3 {
+    type: sum
+    sql: {% if order_items.returned_date._in_query %} ${sale_price}
+          {% elsif orders.created_date._in_query and orders.status == 'cancelled' %} ${sale_price}
+          {% else %} ${sale_price}
+          {% endif %};;
+    value_format_name: usd
+  }
+
+  measure: total_sale_priceA {
+    type: sum
+    sql: ${sale_price};;
+    value_format_name: usd
+  }
+
+  measure: total_sale_priceB {
+    type: sum
+    sql: ${sale_price};;
+    filters: {
+      field: orders.status
+      value: "cancelled"
+    }
+    value_format_name: usd
+  }
+
+
+  measure: total_sale_price_conditional_filter {
+    type: number
+    sql: {% if order_items.returned_date._in_query %} ${total_sale_priceA}
+          {% elsif orders.created_date._in_query %} ${total_sale_priceB}
+          {% else %} ${total_sale_priceA}
+          {% endif %};;
+    value_format_name: usd
+  }
+
+
+  measure: percent_of_total_sale_price{
+    type: percent_of_total
+    sql: ${total_sale_price} ;;
+  }
+
+
 #####################
 
 
@@ -137,6 +191,15 @@ view: order_items {
     sql: ${sale_price} ;;
   }
 
+  measure: html_test_placeholder {
+    type: count
+    html:
+      <p><div>
+      Hamilton is a musical with music, lyrics, and book by Lin-Manuel Miranda. It is inspired by the 2004 biography Alexander Hamilton by historian Ron Chernow. The musical tells the story of American Founding Father Alexander Hamilton through music that draws heavily from hip hop, as well as R&B, pop, soul, and traditional-style show tunes; the show also incorporates color-conscious casting of non-white actors as the Founding Fathers and other historical figures.[1][2][3] Through this use of modern storytelling methods, Hamilton has been described as being about "America then, as told by America now."[4] The show premiered at the Public Theater Off-Broadway on February 17, 2015, where its engagement was sold out;[5] it won eight Drama Desk Awards, including Outstanding Musical. It then transferred to the Richard Rodgers Theatre on Broadway, opening on August 6, 2015, where it received uniformly positive reviews and strikingly high box office sales.[6] At the 2016 Tony Awards, Hamilton received a record-setting 16 nominations, eventually winning 11 awards, including Best Musical. It received the 2016 Pulitzer Prize for Drama.
+      </div></p>
+    ;;
+  }
+
 ##### RUNNING TOTALS TEST ###########
 
 parameter:  running_total_metric_selector {
@@ -164,18 +227,23 @@ measure: running_total_sale_price {
 measure: average_order_value {
   type: number
   sql: (${order_items.total_sale_price}/${orders.count}) ;;
-  value_format_name: usd_0
+  value_format_name: usd
 }
 
 measure: running_total_measure {
+  label_from_parameter: running_total_metric_selector
   type: running_total
   value_format: "#,##0.00"
   direction: "column"
   sql: CASE
         WHEN {% parameter running_total_metric_selector %} = 'total_number_of_orders' THEN ${orders.count}
         WHEN {% parameter running_total_metric_selector %} = 'total_sale_price' THEN ${order_items.total_sale_price}
-        WHEN {% parameter running_total_metric_selector %} = 'average_order_value' THEN (${order_items.total_sale_price}/${orders.count})
+        WHEN {% parameter running_total_metric_selector %} = 'average' THEN (${order_items.total_sale_price}/${orders.count})
         ELSE NULL
 END ;;
 }
+
+#   label: "{% if running_total_metric_selector._parameter_value == 'total_sale_price' %} Total Sale Price
+#   {% elsif running_total_metric_selector._parameter_value == 'total_number_of_orders' %} Running Order Total
+#   {% else %} Running Total {% endif %}"
 }

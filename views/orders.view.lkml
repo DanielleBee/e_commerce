@@ -126,7 +126,7 @@ filter: date_filter_test {
 
   measure: first_order {
     type: date
-    sql: MIN(${created_date}) ;;
+    sql: MIN(CASE WHEN ${status} = "complete" THEN (${created_date}) END) ;;
   }
 
 #comment

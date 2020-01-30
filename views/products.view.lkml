@@ -145,16 +145,39 @@ THEN ${category}
   dimension: brand {
     type: string
     sql: ${TABLE}.brand ;;
-    link: {
-      label: "Google Search"
-      url: "http://www.google.com/search?q={{ value }}+Clothing"
-      icon_url: "http://google.com/favicon.ico"
-    }
+#     link: {
+#       label: "Google Search"
+#       url: "http://www.google.com/search?q={{ value }}+Clothing"
+#       icon_url: "http://google.com/favicon.ico"
+#     }
   }
 
   dimension: name {
     type: string
     sql: ${TABLE}.item_name ;;
+    html:{{ value | newline_to_br  }};;
+  }
+
+  dimension: liquid_test_blank_first_line {
+    type: string
+    sql:
+    CONCAT
+    (CONCAT('\n', "-Category: ", ${category}, '\n'),
+    CASE WHEN ${category} = "Accessories"
+    THEN CONCAT("-Brand: ", ${brand}, '\n')
+    ELSE '' END);;
+    html:{{ value | newline_to_br  }};;
+  }
+
+  dimension: liquid_test_2 {
+    type: string
+    sql:
+    CONCAT
+    (CONCAT("-Category: ", ${category}, '\n'),
+    CASE WHEN ${category} = "Accessories"
+    THEN CONCAT("-Brand: ", ${brand}, '\n')
+    ELSE '' END);;
+    html:{{ value | newline_to_br  }};;
   }
 
   dimension: category {
@@ -183,5 +206,6 @@ THEN ${category}
 measure: total_retail_price {
   type:  sum
   sql: ${TABLE}.retail_price ;;
+  value_format_name: usd_0
 }
 }
