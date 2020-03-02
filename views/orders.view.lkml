@@ -9,8 +9,13 @@ view: orders {
 
   dimension: user_id {
     type: number
-    hidden: yes
-    sql: ${TABLE}.user_id ;;
+#     hidden: yes
+    sql: CAST(${TABLE}.user_id AS DECIMAL) ;;
+  }
+
+  dimension: test {
+    type: string
+    sql: "Test" ;;
   }
 
   dimension_group: created {
@@ -37,6 +42,57 @@ view: orders {
     sql: CONVERT_TZ(${created_raw}, 'UTC', 'Americas/New_York');;
     }
 
+#   dimension_group: time_between_ordered_and_returned {
+#     type: time
+#     sql_start: ${TABLE}.created_raw ;;
+#     sql_end: now();;
+#   }
+
+
+parameter: starting_date  {
+  type: date
+}
+
+parameter: ending_date {
+  type: date
+}
+
+# dimension: date_start_filtered {
+#   type: yesno
+#   sql: {% if orders.date_start._is_filtered and orders.date_end._is_filtered %}
+#  ( ${created_date} >= {% parameter date_start %}
+#   AND
+#   ${created_date} < {% parameter date_end %})
+#   {% else %}
+#   1=1
+#   {% endif %}
+#   ;;
+# }
+
+# on the existing explore
+# sql_always_where:
+# if date start or date end is filtered, then logic else 1=1
+# created date < parameter date_end and created date >= parameter date start ;;
+#or a yesno dimension and in the sql parameter we have that logic
+
+filter: point_in_time {
+  type: date
+#   sql: ({% condition point_in_time %} date_start {% endcondition %} >= ${created_date}
+#        AND (
+#        {% condition point_in_time %} date_end {% endcondition %} < order_items.returned_date
+#        OR order_items.returned_date IS NULL
+#        )
+#        );;
+
+}
+
+filter: point_in_time2 {
+  type: date
+  sql:  ${created_date} >= {% date_start point_in_time2 %}
+  AND
+  ${created_date} < {% date_end point_in_time2 %} ;;
+}
+
   dimension: status {
     type: string
     sql: ${TABLE}.status ;;
@@ -50,18 +106,18 @@ view: orders {
 ####### Date Parameters Test ###########
   parameter: date_picker {
   type: unquoted
-  allowed_value: {
-    label: "Before 2018"
-    value: "Before_2018"
-  }
-  allowed_value: {
-    label: "10 Months Ago"
-    value: "10_months_ago"
-    }
-    allowed_value: {
-      label: "Week to date"
-      value: "this_week"
-    }
+#   allowed_value: {
+#     label: "Before 2018"
+#     value: "Before_2018"
+#   }
+#   allowed_value: {
+#     label: "10 Months Ago"
+#     value: "10_months_ago"
+#     }
+#     allowed_value: {
+#       label: "Week to date"
+#       value: "this_week"
+#     }
   }
 
 ############# THIS YEAR LOGIC ##############
@@ -250,14 +306,14 @@ filter: date_filter_test {
   }
 
 
-  dimension: test_dimension {
-#     description: "Member has checked in at least once at a specified partner in the past 3 months"
-    type: yesno
-    sql:${id} IN (SELECT id
-                              FROM users
-                              WHERE {% condition order_id_picker %} orders.id {% endcondition %}
-                              AND CAST(${created_raw} as date) BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL {% parameter time_value %} {% parameter time_type %})  AND CURRENT_DATE()) ;;
-  }
+#   dimension: test_dimension {
+# #     description: "Member has checked in at least once at a specified partner in the past 3 months"
+#     type: yesno
+#     sql:${id} IN (SELECT id
+#                               FROM users
+#                               WHERE {% condition order_id_picker %} orders.id {% endcondition %}
+#                               AND CAST(${created_raw} as date) BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL {% parameter time_value %} {% parameter time_type %})  AND CURRENT_DATE()) ;;
+#   }
 
 
 }

@@ -75,7 +75,8 @@ view: products {
     }
   }
 
-  dimension: product_hierarchy {
+  dimension: product_hierarchy_2 {
+    hidden: yes
     label_from_parameter: select_product_detail
     description: "To be used with the Select Product Detail parameter - {{ select_product_detail._parameter_value }} in sql"
     type: string
@@ -84,7 +85,7 @@ view: products {
   }
 
 ##OR WE CAN SET THE PARAMETER THIS WAY
-  dimension: product_hierarchy_better {
+  dimension: product_hierarchy {
     label_from_parameter: select_product_detail
     description: "To be used with the Select Product Detail parameter - conditional logic with liquid variables in the sql"
     type: string
@@ -145,14 +146,20 @@ THEN ${category}
   dimension: brand {
     type: string
     sql: ${TABLE}.brand ;;
+    }
 #     link: {
 #       label: "Google Search"
 #       url: "http://www.google.com/search?q={{ value }}+Clothing"
 #       icon_url: "http://google.com/favicon.ico"
 #     }
+
+  measure: brand_count {
+    type: count_distinct
+    sql: ${brand} ;;
   }
 
   dimension: name {
+#     label: "Item Name"
     type: string
     sql: ${TABLE}.item_name ;;
     html:{{ value | newline_to_br  }};;
@@ -186,7 +193,12 @@ THEN ${category}
   }
 
   measure: count {
-    label: "Number of Products"
+    label: "Count of Products"
+    type: count
+  }
+
+  measure: count_with_link_param {
+#     label: "Number of Products"
     type: count
 #     drill_fields: [
 #       id,

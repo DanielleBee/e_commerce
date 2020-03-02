@@ -77,19 +77,55 @@ view: order_items {
 
   dimension: discounted_sale_price {
     type: number
-    sql: ${sale_price} * 0.8;;
+    sql: CASE WHEN ${sale_price}>100 THEN ${sale_price}*0.85 ELSE ${sale_price}*0.5 END;;
     value_format_name: usd
   }
 
+  measure: total_discounted_sale_price {
+    type: sum
+    sql: ${discounted_sale_price} ;;
+  }
+
+  measure: total_sale_price {
+    type: sum
+    sql: ${sale_price} ;;
+  }
+
+  measure: percent_diff_sale_and_discount {
+    type: string
+#     value_format_name: percent_0
+    sql:
+    CASE WHEN ((${total_sale_price}-${total_discounted_sale_price})/nullif(${total_sale_price},0))*100 < 20
+    THEN ROUND(((${total_sale_price}-${total_discounted_sale_price})/nullif(${total_sale_price},0))*100,2)
+    ELSE CONCAT(ROUND(((${total_sale_price}-${total_discounted_sale_price})/nullif(${total_sale_price},0))*100,4),"%")
+    END;;
+}
+
+  measure: percent_diff_test {
+    type: number
+    sql: (${total_sale_price}-${total_discounted_sale_price})/nullif(${total_sale_price},0) ;;
+    value_format: "[<0.2000]0.00%;[>=0.2000]0%;0%"
+  }
+# sql: CASE WHEN ${order_id}<10 THEN ROUND(1.32,1) ELSE ROUND(1.32,0) END ;;
+#     html:
+#     {% if value < .01 %}
+#     {{ rendered_value | value_format: "0.00%" }}
+#     {% else %}
+#     {{rendered_value | value_format: "0%"   }}
+#     {% endif %}
+# ;;
+
 ############date templated filter test################
   dimension: date_satisfies_filter {
+    description: "Templated filter to be used with total sale price measure"
     type: yesno
 #     hidden: yes
     sql: {% condition orders.date_filter_test %} ${orders.created_date} {% endcondition %} ;;
   }
 
 
-  measure: total_sale_price {
+  measure: total_sale_price_filtered_measure {
+    description: "To be used with Date Satisfies Filter filter"
     type: sum
     sql: ${sale_price} ;;
     value_format_name: usd
@@ -112,6 +148,7 @@ view: order_items {
 #   }
 
   measure: total_sale_price_conditional_filter3 {
+    group_label: "Conditional Filtered Measure Test"
     type: sum
     sql: {% if order_items.returned_date._in_query %} ${sale_price}
           {% elsif orders.created_date._in_query and orders.status == 'cancelled' %} ${sale_price}
@@ -121,12 +158,14 @@ view: order_items {
   }
 
   measure: total_sale_priceA {
+    group_label: "Conditional Filtered Measure Test"
     type: sum
     sql: ${sale_price};;
     value_format_name: usd
   }
 
   measure: total_sale_priceB {
+    group_label: "Conditional Filtered Measure Test"
     type: sum
     sql: ${sale_price};;
     filters: {
@@ -138,6 +177,7 @@ view: order_items {
 
 
   measure: total_sale_price_conditional_filter {
+    group_label: "Conditional Filtered Measure Test"
     type: number
     sql: {% if order_items.returned_date._in_query %} ${total_sale_priceA}
           {% elsif orders.created_date._in_query %} ${total_sale_priceB}
@@ -152,9 +192,7 @@ view: order_items {
     sql: ${total_sale_price} ;;
   }
 
-
 #####################
-
 
   measure: average_sale_price {
     type: average
@@ -179,12 +217,6 @@ view: order_items {
     type: min
     sql: ${sale_price} ;;
   }
-
-#   measure: test_measure_sum {
-#     type: number
-#     sql: ${total_profit}+${total_sale_price} ;;
-#    link:
-#   }
 
   measure: most_expensive_item {
     type: max

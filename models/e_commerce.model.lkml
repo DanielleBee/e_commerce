@@ -53,11 +53,23 @@ explore: order_items {
   }
 }
 
+explore: min_max_order_dates {}
+
 explore: products {
-  fields: [ALL_FIELDS*, -products.brand]
+#   fields: [ALL_FIELDS*, -products.brand]
 }
 
 explore: orders {
+  sql_always_where:
+  {% if orders.starting_date._is_filtered or orders.ending_date._is_filtered %}
+  (${created_date} >= {{ orders.starting_date._parameter_value }}
+  AND
+  ${created_date} < {{ orders.ending_date._parameter_value }})
+  {% else %}
+  1=1
+  {% endif %};;
+}
+
 #   sql_always_where:
 #   {% if orders.date_picker._parameter_value == 'Before_2018' %}
 #     ${created_date} < (CONVERT_TZ(TIMESTAMP('2018-01-01'),'America/Los_Angeles','UTC'))
@@ -66,7 +78,6 @@ explore: orders {
 #   {% else 1=1 %}
 #   {% endif %}
 # ;;
-}
 
 # sql_always_where: {% condition orders.date_picker %} orders.created_at {% endcondition %} ;;
 

@@ -1,14 +1,3 @@
-# - dashboard: lookml_dash_test
-#   title: Lookml Dash Test
-#   layout: tile
-#   tile_size: 100
-
-#   filters:
-
-#   elements:
-#     - name: hello_world
-#       type: looker_column
-
 - dashboard: table_viz_dashboard_download_test__api
   title: Table Viz Dashboard Download Test - API
   layout: newspaper
