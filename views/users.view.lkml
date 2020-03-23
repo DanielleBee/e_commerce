@@ -84,6 +84,15 @@
     drill_fields: [state, city]
     }
 
+    dimension: countrynameformaps {
+      type: string
+      map_layer_name: countries
+      sql: CASE WHEN ${TABLE}.country = 'USA' THEN 'US' ELSE ${TABLE}.country END;;
+#       view_label: "Demographic Information"
+#       group_label: "Account Holder"
+#       label: "Country"
+    }
+
     dimension: age {
       type: number
       sql: ${TABLE}.age ;;

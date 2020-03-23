@@ -194,26 +194,27 @@ THEN ${category}
 
   measure: count {
     label: "Count of Products"
+        drill_fields: [
+      id,
+      retail_price,
+      sku,
+      department,
+      brand,
+      name,
+      category
+    ]
     type: count
   }
 
   measure: count_with_link_param {
-#     label: "Number of Products"
     type: count
-#     drill_fields: [
-#       id,
-#       retail_price,
-#       sku,
-#       department,
-#       brand,
-#       name,
-#       category
-#     ]
     link: {
       label: "Drill to Explore"
       url: "/explore/e_commerce/products?fields=products.brand,products.id,products.retail_price,products.sku&f[products.department]={{ _filters['products.department'] | url_encode }}&f[products.brand]={{products.brand._value}}"
     }
   }
+
+#     label: "Number of Products"
 
 measure: total_retail_price {
   type:  sum

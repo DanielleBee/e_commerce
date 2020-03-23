@@ -237,7 +237,7 @@ view: order_items {
 parameter:  running_total_metric_selector {
   type: string
   allowed_value: {
-    label: "Total Sale Price"
+    label: "{{ _user_attributes['email'] }}"
     value: "total_sale_price"
   }
   allowed_value: {
@@ -250,30 +250,34 @@ parameter:  running_total_metric_selector {
   }
 }
 
-measure: running_total_sale_price {
-  type: running_total
-  sql: ${total_sale_price} ;;
-  value_format_name: usd_0
-}
-
-measure: average_order_value {
-  type: number
-  sql: (${order_items.total_sale_price}/${orders.count}) ;;
-  value_format_name: usd
-}
-
 measure: running_total_measure {
-  label_from_parameter: running_total_metric_selector
+#   label_from_parameter: running_total_metric_selector
+label: "{% if running_total_metric_selector._parameter_value == \"'total_number_of_orders'\" %} {{ _user_attributes['first_name'] }}
+{% elsif running_total_metric_selector._parameter_value == \"'total_sale_price'\" %} {{ _user_attributes['last_name'] }}
+{% else %} Product Group
+{% endif %}"
   type: running_total
   value_format: "#,##0.00"
   direction: "column"
   sql: CASE
-        WHEN {% parameter running_total_metric_selector %} = 'total_number_of_orders' THEN ${orders.count}
-        WHEN {% parameter running_total_metric_selector %} = 'total_sale_price' THEN ${order_items.total_sale_price}
-        WHEN {% parameter running_total_metric_selector %} = 'average' THEN (${order_items.total_sale_price}/${orders.count})
-        ELSE NULL
-END ;;
+  WHEN {% parameter running_total_metric_selector %} = 'total_number_of_orders' THEN ${orders.count}
+  WHEN {% parameter running_total_metric_selector %} = 'total_sale_price' THEN ${order_items.total_sale_price}
+  WHEN {% parameter running_total_metric_selector %} = 'average' THEN (${order_items.total_sale_price}/${orders.count})
+  ELSE NULL
+  END ;;
 }
+
+  measure: running_total_sale_price {
+    type: running_total
+    sql: ${total_sale_price} ;;
+    value_format_name: usd_0
+  }
+
+  measure: average_order_value {
+    type: number
+    sql: (${order_items.total_sale_price}/${orders.count}) ;;
+    value_format_name: usd
+  }
 
 #   label: "{% if running_total_metric_selector._parameter_value == 'total_sale_price' %} Total Sale Price
 #   {% elsif running_total_metric_selector._parameter_value == 'total_number_of_orders' %} Running Order Total

@@ -202,6 +202,21 @@ filter: date_filter_test {
 #     }
 #     }
 
+  measure: count_disinct_test {
+    type: number
+    sql: count(distinct ${id}) filter (where ${status}='cancelled') ;;
+  }
+
+  measure: count_distinct_cancelled_orders {
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: status
+      value: "cancelled"
+    }
+  }
+
+
   measure: count {
     type: count
     drill_fields: [created_date,count]
