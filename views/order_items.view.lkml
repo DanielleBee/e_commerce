@@ -58,11 +58,6 @@ view: order_items {
     }
   }
 
-  dimension: status {
-    type: string
-    sql: ${TABLE}.status ;;
-  }
-
   measure: count {
     label: "Number of Items Ordered"
     type: count
@@ -70,7 +65,6 @@ view: order_items {
       id,
       returned_time,
       sale_price,
-      status,
       products.name
     ]
   }
@@ -89,6 +83,8 @@ view: order_items {
   measure: total_sale_price {
     type: sum
     sql: ${sale_price} ;;
+    value_format_name: usd
+    html: {{ orders.status._rendered_value  }}: Text String {{ rendered_value }} ;;
   }
 
   measure: percent_diff_sale_and_discount {

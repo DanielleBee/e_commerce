@@ -60,14 +60,37 @@ explore: products {
 }
 
 explore: orders {
-  sql_always_where:
-  {% if orders.starting_date._is_filtered or orders.ending_date._is_filtered %}
-  (${created_date} >= {{ orders.starting_date._parameter_value }}
-  AND
-  ${created_date} < {{ orders.ending_date._parameter_value }})
-  {% else %}
-  1=1
-  {% endif %};;
+  sql_always_where:  {% if orders.date_granularity._parameter_value == "'Last Month'" %}
+          ((( orders.created_at ) >= ((DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-%m-01')),INTERVAL -1 month))) AND ( orders.created_at ) < ((DATE_ADD(DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-%m-01')),INTERVAL -1 month),INTERVAL 1 month)))))
+        {% elsif orders.date_granularity._parameter_value == "'This Year'" %}
+          ((( orders.created_at ) >= ((TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-01-01')))) AND ( orders.created_at ) < ((DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-01-01')),INTERVAL 1 year)))))
+        {% elsif orders.date_granularity._parameter_value == "'Last Year'" %}
+          ((( orders.created_at ) >= ((DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-01-01')),INTERVAL -1 year))) AND ( orders.created_at ) < ((DATE_ADD(DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-01-01')),INTERVAL -1 year),INTERVAL 1 year)))))
+        {% else %}
+        1=1
+        {% endif %} ;;
+
+# sql_always_where:
+#     CASE
+#     WHEN {{ orders.date_granularity._parameter_value }} = 'Last Month'
+#       THEN ((( orders.created_at ) >= ((DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-%m-01')),INTERVAL -1 month))) AND ( orders.created_at ) < ((DATE_ADD(DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-%m-01')),INTERVAL -1 month),INTERVAL 1 month)))))
+#     WHEN {{ orders.date_granularity._parameter_value }} = 'This Year'
+#       THEN ((( orders.created_at ) >= ((TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-01-01')))) AND ( orders.created_at ) < ((DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-01-01')),INTERVAL 1 year)))))
+#     WHEN {{ orders.date_granularity._parameter_value }} = 'Last Year'
+#       THEN ((( orders.created_at ) >= ((DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-01-01')),INTERVAL -1 year))) AND ( orders.created_at ) < ((DATE_ADD(DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-01-01')),INTERVAL -1 year),INTERVAL 1 year)))))
+#     ELSE 1=1
+#     END;;
+
+
+#   sql_always_where:
+#   {% if orders.starting_date._is_filtered or orders.ending_date._is_filtered %}
+#   (${created_date} >= {{ orders.starting_date._parameter_value }}
+#   AND
+#   ${created_date} < {{ orders.ending_date._parameter_value }})
+#   {% else %}
+#   1=1
+#   {% endif %};;
+# sql_always_where: {% condition orders.date_granularity %} orders.created_at {% endcondition %} ;;
 }
 
 #   sql_always_where:

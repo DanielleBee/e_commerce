@@ -42,6 +42,28 @@ view: orders {
     sql: CONVERT_TZ(${created_raw}, 'UTC', 'Americas/New_York');;
     }
 
+parameter: date_granularity {
+  type: string
+  default_value: "Last Month"
+  allowed_value: {value: "This Week"}
+  allowed_value: {value: "Last Week"}
+  allowed_value: {value: "This Month"}
+  allowed_value: {value: "Last Month"}
+  allowed_value: {value: "This Quarter"}
+  allowed_value: {value: "Last Quarter"}
+  allowed_value: {value: "6 months"}
+  allowed_value: {
+    label: "Year to date"
+    value: "This Year"
+  }
+  allowed_value: {value: "Last Year"}
+}
+
+dimension: even_or_odd {
+  type: yesno
+  sql: mod(${id},2) = 1;;
+}
+
 #   dimension_group: time_between_ordered_and_returned {
 #     type: time
 #     sql_start: ${TABLE}.created_raw ;;
@@ -95,7 +117,9 @@ filter: point_in_time2 {
 
   dimension: status {
     type: string
-    sql: ${TABLE}.status ;;
+    sql: concat(${TABLE}.status, ' & ', ${TABLE}.status) ;;
+#     html: {{ rendered_value | unescape }} ;;
+    drill_fields: [created_date,count]
   }
 
   dimension: is_complete {
@@ -208,6 +232,7 @@ filter: date_filter_test {
   }
 
   measure: count_distinct_cancelled_orders {
+    drill_fields: [created_date,count_distinct_cancelled_orders]
     type: count_distinct
     sql: ${id} ;;
     filters: {
@@ -220,48 +245,49 @@ filter: date_filter_test {
   measure: count {
     type: count
     drill_fields: [created_date,count]
-    link: {
-      label: "Drill Details"
-      url: "
-      {% assign vis_config = '{
-        \"type\": \"looker_bar\",
-        \"x_axis_gridlines\" : false,
-        \"y_axis_gridlines\" : true,
-        \"show_view_names\" : false,
-        \"show_y_axis_labels\" : true,
-        \"show_y_axis_ticks\" : true,
-        \"show_x_axis_label\" : true,
-        \"show_x_axis_ticks\" : true,
-        \"y_axis_scale_mode\" : \"linear\",
-        \"plot_size_by_field\" : false,
-        \"x_axis_reversed\" : false,
-        \"y_axis_reversed\" : false,
-        \"y_axis_tick_density\" : \"default\",
-        \"y_axis_tick_density_custom\" : 5,
-        \"limit_displayed_rows\" : false,
-        \"legend_position\" : \"center\",
-        \"font_size\" : \"10px\",
-        \"series_types\" : {},
-        \"point_style\" : \"none\",
-        \"show_value_labels\" : true,
-        \"label_density\" : 25,
-        \"label_color\" : \"#A0318C\",
-        \"x_axis_scale\": \"auto\",
-        \"y_axis_combined\" : true,
-        \"ordering\" : \"none\",
-        \"show_null_labels\" : false,
-        \"show_totals_labels\" : false,
-        \"show_silhouette\" : false,
-        \"totals_color\" : \"#808080\",
-        \"collection_id\" : \"9d1da669-a6b4-4a4f-8519-3ea8723b79b5\",
-        \"palette_id\" : \"53f185d2-c73c-4aa7-9b3e-c56a440c3743\",
-        \"series_colors\" : {
-          \"orders.count\" : \"#74A09F\"
-         }
-      }' %}
-      {{ link }}&vis_config={{ vis_config | encode_uri }}&toggle=vis,pik"
     }
-  }
+#     link: {
+#       label: "Drill Details"
+#       url: "
+#       {% assign vis_config = '{
+#         \"type\": \"looker_bar\",
+#         \"x_axis_gridlines\" : false,
+#         \"y_axis_gridlines\" : true,
+#         \"show_view_names\" : false,
+#         \"show_y_axis_labels\" : true,
+#         \"show_y_axis_ticks\" : true,
+#         \"show_x_axis_label\" : true,
+#         \"show_x_axis_ticks\" : true,
+#         \"y_axis_scale_mode\" : \"linear\",
+#         \"plot_size_by_field\" : false,
+#         \"x_axis_reversed\" : false,
+#         \"y_axis_reversed\" : false,
+#         \"y_axis_tick_density\" : \"default\",
+#         \"y_axis_tick_density_custom\" : 5,
+#         \"limit_displayed_rows\" : false,
+#         \"legend_position\" : \"center\",
+#         \"font_size\" : \"10px\",
+#         \"series_types\" : {},
+#         \"point_style\" : \"none\",
+#         \"show_value_labels\" : true,
+#         \"label_density\" : 25,
+#         \"label_color\" : \"#A0318C\",
+#         \"x_axis_scale\": \"auto\",
+#         \"y_axis_combined\" : true,
+#         \"ordering\" : \"none\",
+#         \"show_null_labels\" : false,
+#         \"show_totals_labels\" : false,
+#         \"show_silhouette\" : false,
+#         \"totals_color\" : \"#808080\",
+#         \"collection_id\" : \"9d1da669-a6b4-4a4f-8519-3ea8723b79b5\",
+#         \"palette_id\" : \"53f185d2-c73c-4aa7-9b3e-c56a440c3743\",
+#         \"series_colors\" : {
+#           \"orders.count\" : \"#74A09F\"
+#          }
+#       }' %}
+#       {{ link }}&vis_config={{ vis_config | encode_uri }}&toggle=vis,pik"
+
+
 
 #         \"trellis\": \"\",
 #         \"stacking: '\"\",
