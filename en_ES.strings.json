@@ -7,7 +7,8 @@
     "Inexpensive": "Barato",
     "Normal": "Normal",
     "Expensive": "Caro",
+    "week_start_day_dash": "día de inicio de semana",
     "Week Start Day": "día de inicio de semana",
-    "Price Range": "rango de precios",
+    "Price_Range": "rango de precios",
     "Number of Items Ordered": "cantidad de artículos pedidos"
 }
