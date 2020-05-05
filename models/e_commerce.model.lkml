@@ -14,6 +14,8 @@ datagroup: daily_refresh {
   max_cache_age: "24 hours"
 }
 
+# explore: ndt {}
+
 explore: order_items {
   join: orders {
   sql_on: ${orders.id} = ${order_items.order_id};;
@@ -55,6 +57,8 @@ explore: order_items {
 
 explore: min_max_order_dates {}
 
+explore: orders_derived_table {}
+
 explore: products {
 #   fields: [ALL_FIELDS*, -products.brand]
 }
@@ -69,6 +73,7 @@ explore: orders {
         {% else %}
         1=1
         {% endif %} ;;
+}
 
 # sql_always_where:
 #     CASE
@@ -91,7 +96,7 @@ explore: orders {
 #   1=1
 #   {% endif %};;
 # sql_always_where: {% condition orders.date_granularity %} orders.created_at {% endcondition %} ;;
-}
+# }
 
 #   sql_always_where:
 #   {% if orders.date_picker._parameter_value == 'Before_2018' %}
@@ -115,35 +120,35 @@ explore: user_order_facts { }
 
 
 ############### COHORT ANALYSIS TEST #################
-  explore: users {
-    join: orders {
-      sql_on: ${orders.user_id} = ${users.id} ;;
-      relationship : one_to_many
-    }
-
-    join: order_items {
-      sql_on: ${order_items.order_id} = ${orders.id} ;;
-      relationship : one_to_many
-    }
-
-    join: user_cohort_size {
-      sql_on: ${user_cohort_size.created_month} = ${users.created_month};;
-      relationship: many_to_one
-    }
-
-    join: inventory_items {
-      sql_on: ${inventory_items.id} = ${order_items.inventory_item_id} ;;
-      fields: []
-      type: left_outer
-      relationship: one_to_one
-    }
-
-    join: products {
-      sql_on: ${products.id} = ${inventory_items.product_id} ;;
-      type: left_outer
-      relationship: many_to_one
-    }
-    }
+#   explore: users {
+#     join: orders {
+#       sql_on: ${orders.user_id} = ${users.id} ;;
+#       relationship : one_to_many
+#     }
+#
+#     join: order_items {
+#       sql_on: ${order_items.order_id} = ${orders.id} ;;
+#       relationship : one_to_many
+#     }
+#
+#     join: user_cohort_size {
+#       sql_on: ${user_cohort_size.created_month} = ${users.created_month};;
+#       relationship: many_to_one
+#     }
+#
+#     join: inventory_items {
+#       sql_on: ${inventory_items.id} = ${order_items.inventory_item_id} ;;
+#       fields: []
+#       type: left_outer
+#       relationship: one_to_one
+#     }
+#
+#     join: products {
+#       sql_on: ${products.id} = ${inventory_items.product_id} ;;
+#       type: left_outer
+#       relationship: many_to_one
+#     }
+#     }
 
 ####### Parameterized derived table to calculate cohort size
     view: user_cohort_size {

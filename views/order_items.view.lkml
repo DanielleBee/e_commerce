@@ -33,6 +33,11 @@ view: order_items {
     sql: ${TABLE}.returned_at ;;
   }
 
+  dimension: order_returned {
+    type: yesno
+    sql: ${returned_date} IS NOT NULL ;;
+  }
+
   dimension: sale_price {
     type: number
     sql: (${TABLE}.sale_price) ;;
@@ -71,7 +76,7 @@ view: order_items {
 
   dimension: discounted_sale_price {
     type: number
-    sql: CASE WHEN ${sale_price}>100 THEN ${sale_price}*0.85 ELSE ${sale_price}*0.5 END;;
+    sql: CASE WHEN ${sale_price}>100 THEN ${sale_price}*0.85 END;;
     value_format_name: usd
   }
 
@@ -84,7 +89,7 @@ view: order_items {
     type: sum
     sql: ${sale_price} ;;
     value_format_name: usd
-    html: {{ orders.status._rendered_value  }}: Text String {{ rendered_value }} ;;
+    html: {{ orders.status._rendered_value | unescape  }}: Text String {{ rendered_value }} ;;
   }
 
   measure: percent_diff_sale_and_discount {

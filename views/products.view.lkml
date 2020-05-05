@@ -189,7 +189,17 @@ THEN ${category}
 
   dimension: category {
     type: string
-    sql: ${TABLE}.category ;;
+    sql: CONCAT(${TABLE}.category, " ", ${TABLE}.category, " ", ${TABLE}.category) ;;
+    html: {% assign words = {{value}} | split: ' ' %}
+{% assign numwords = 0 %}
+{% for word in words %}
+{{ word }}
+{% assign numwords = numwords | plus: 1 %}
+{% assign mod = numwords | modulo: 3 %}
+{% if mod == 0 %}
+<br>
+{% endif %}
+{% endfor %} ;;
   }
 
   measure: count {

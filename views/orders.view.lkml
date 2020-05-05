@@ -122,9 +122,39 @@ filter: point_in_time2 {
     drill_fields: [created_date,count]
   }
 
+  dimension: status_2 {
+    type: string
+    sql: concat("-", ${TABLE}.status) ;;
+    hidden: yes
+  }
+
+  dimension: status_minus {
+    type: string
+    sql: REPLACE(concat("-", ${TABLE}.status),"-","^-")  ;;
+    html: {{ orders.status_2._value }} ;;
+  }
+
   dimension: is_complete {
     type: yesno
     sql: ${status} = 'complete' ;;
+  }
+
+  dimension: is_cancelled {
+    type: yesno
+    sql: ${status} = 'cancelled' ;;
+  }
+
+  dimension: is_pending {
+    type: yesno
+    sql: ${status} = 'pending' ;;
+  }
+
+  dimension: order_status {
+    type: string
+    sql: CASE WHEN ${is_complete} = 'yes' THEN 'complete'
+    WHEN ${is_cancelled} = 'yes' THEN 'cancelled'
+    ELSE 'pending'
+    END;;
   }
 
 ####### Date Parameters Test ###########
@@ -203,6 +233,11 @@ filter: date_filter_test {
     type: date
     sql: MAX(${created_date}) ;;
   }
+
+#   dimension: most_recent_order_flag {
+#     type: yesno
+#     sql: ${created_date} = ${min_max_order_dates.maxorders_created_date} ;;
+#   }
 
   measure: first_order {
     type: date
