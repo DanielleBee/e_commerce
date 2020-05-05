@@ -46,6 +46,7 @@ view: order_items {
   }
 
   dimension: price_range {
+    label: "Price Range"
     case: {
       when: {
         sql: ${sale_price} < 20 ;;

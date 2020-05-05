@@ -4,7 +4,7 @@
   elements:
   - title: No Dimension Fill
     name: No Dimension Fill
-    model: db_test
+    model: e_commerce
     explore: order_items
     type: looker_column
     fields: [orders.created_week, orders.count, users.gender]
@@ -52,7 +52,7 @@
     height: 6
   - title: Nov and Dec 2019 no dim fill
     name: Nov and Dec 2019 no dim fill
-    model: db_test
+    model: e_commerce
     explore: order_items
     type: looker_column
     fields: [orders.created_week, orders.count, users.gender]
@@ -99,7 +99,7 @@
     height: 6
   - title: July 1 to Sept 30
     name: July 1 to Sept 30
-    model: db_test
+    model: e_commerce
     explore: order_items
     type: looker_column
     fields: [orders.created_week, orders.count, users.gender]
