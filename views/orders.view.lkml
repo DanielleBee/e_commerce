@@ -32,6 +32,12 @@ view: orders {
     sql: ${TABLE}.created_at;;
   }
 
+  dimension_group: date_diff {
+    type: duration
+    sql_start: ${TABLE}.created_at ;;
+    sql_end: order_items.returned_at ;;
+  }
+
   dimension: created_date_formatted {
     sql: ${created_date} ;;
     html: {{ rendered_value | date: "%B %d, %Y" }};;
@@ -117,7 +123,8 @@ filter: point_in_time2 {
 
   dimension: status {
     type: string
-    sql: concat(${TABLE}.status, ' & ', ${TABLE}.status) ;;
+#     sql: concat(${TABLE}.status, ' & ', ${TABLE}.status) ;;
+sql:  ${TABLE}.status;;
 #     html: {{ rendered_value | unescape }} ;;
     drill_fields: [created_date,count]
   }

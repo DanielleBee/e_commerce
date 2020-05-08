@@ -9,6 +9,9 @@
     "Expensive": "Caro",
     "week_start_day_dash": "día de inicio de semana",
     "Week Start Day": "día de inicio de semana",
-    "Price_Range": "rango de precios",
-    "Number of Items Ordered": "cantidad de artículos pedidos"
+    "price_range": "rango de precios",
+    "number_of_items_ordered": "cantidad de artículos pedidos",
+    "Sale Price": "precios",
+    "Average Sale Price per Order": "precio promedio por pedido",
+    "total_orders": "pedidos totales"
 }

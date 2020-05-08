@@ -39,6 +39,7 @@ view: order_items {
   }
 
   dimension: sale_price {
+    label: "Sale Price"
     type: number
     sql: (${TABLE}.sale_price) ;;
 #     value_format_name: usd
@@ -46,7 +47,7 @@ view: order_items {
   }
 
   dimension: price_range {
-    label: "Price Range"
+    label: "price_range"
     case: {
       when: {
         sql: ${sale_price} < 20 ;;
@@ -64,8 +65,20 @@ view: order_items {
     }
   }
 
+  dimension: price_range_2 {
+    type: string
+    label: "Price Range"
+    sql: CASE
+    WHEN (${orders.status} LIKE 'complete' AND ${sale_price} < 20) THEN 'cheap'
+    WHEN ${orders.status} LIKE 'complete' AND ${sale_price} >= 20 AND ${sale_price} < 100 THEN 'normal'
+    WHEN ${orders.status} LIKE 'complete' AND ${sale_price} >= 100 THEN 'pricey'
+    ELSE 'blah'
+    END
+    ;;
+  }
+
   measure: count {
-    label: "Number of Items Ordered"
+    label: "number_of_items_ordered"
     type: count
     drill_fields: [
       id,
@@ -100,7 +113,8 @@ view: order_items {
     CASE WHEN ((${total_sale_price}-${total_discounted_sale_price})/nullif(${total_sale_price},0))*100 < 20
     THEN ROUND(((${total_sale_price}-${total_discounted_sale_price})/nullif(${total_sale_price},0))*100,2)
     ELSE CONCAT(ROUND(((${total_sale_price}-${total_discounted_sale_price})/nullif(${total_sale_price},0))*100,4),"%")
-    END;;
+    END
+    ;;
 }
 
   measure: percent_diff_test {
@@ -243,7 +257,7 @@ parameter:  running_total_metric_selector {
     value: "total_sale_price"
   }
   allowed_value: {
-    label: "Total Number of Orders"
+    label: "{{ _localization['total_orders'] }}"
     value: "total_number_of_orders"
   }
   allowed_value: {

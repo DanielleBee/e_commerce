@@ -3,6 +3,8 @@ connection: "thelook"
 # include: "*dashboard.lookml"
 include: "/**/*.view"
 include: "/**/*.dashboard.lookml"
+include: "/*.strings.json"
+# include: "manifest.lkml"
 
 # datagroup: orders_datagroup {
 #   sql_trigger: SELECT COUNT(*) FROM ${orders_derived_table.SQL_TABLE_NAME};;
@@ -53,6 +55,11 @@ explore: order_items {
     type: left_outer
     relationship: many_to_one
   }
+  join: row_total_dt {
+    sql_on: ${row_total_dt.created_week} = ${orders.created_week} ;;
+    relationship: many_to_one
+    type: left_outer
+  }
 }
 
 explore: min_max_order_dates {}
@@ -64,15 +71,20 @@ explore: products {
 }
 
 explore: orders {
-  sql_always_where:  {% if orders.date_granularity._parameter_value == "'Last Month'" %}
-          ((( orders.created_at ) >= ((DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-%m-01')),INTERVAL -1 month))) AND ( orders.created_at ) < ((DATE_ADD(DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-%m-01')),INTERVAL -1 month),INTERVAL 1 month)))))
-        {% elsif orders.date_granularity._parameter_value == "'This Year'" %}
-          ((( orders.created_at ) >= ((TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-01-01')))) AND ( orders.created_at ) < ((DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-01-01')),INTERVAL 1 year)))))
-        {% elsif orders.date_granularity._parameter_value == "'Last Year'" %}
-          ((( orders.created_at ) >= ((DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-01-01')),INTERVAL -1 year))) AND ( orders.created_at ) < ((DATE_ADD(DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-01-01')),INTERVAL -1 year),INTERVAL 1 year)))))
-        {% else %}
-        1=1
-        {% endif %} ;;
+#   sql_always_where:  {% if orders.date_granularity._parameter_value == "'Last Month'" %}
+#           ((( orders.created_at ) >= ((DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-%m-01')),INTERVAL -1 month))) AND ( orders.created_at ) < ((DATE_ADD(DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-%m-01')),INTERVAL -1 month),INTERVAL 1 month)))))
+#         {% elsif orders.date_granularity._parameter_value == "'This Year'" %}
+#           ((( orders.created_at ) >= ((TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-01-01')))) AND ( orders.created_at ) < ((DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-01-01')),INTERVAL 1 year)))))
+#         {% elsif orders.date_granularity._parameter_value == "'Last Year'" %}
+#           ((( orders.created_at ) >= ((DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-01-01')),INTERVAL -1 year))) AND ( orders.created_at ) < ((DATE_ADD(DATE_ADD(TIMESTAMP(DATE_FORMAT(DATE(NOW()),'%Y-01-01')),INTERVAL -1 year),INTERVAL 1 year)))))
+#         {% else %}
+#         1=1
+#         {% endif %} ;;
+  join: row_total_dt {
+    sql_on: ${row_total_dt.created_week} = ${orders.created_week} ;;
+    relationship: many_to_one
+    type: left_outer
+  }
 }
 
 # sql_always_where:
