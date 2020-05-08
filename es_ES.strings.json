@@ -13,5 +13,7 @@
     "number_of_items_ordered": "cantidad de artículos pedidos",
     "Sale Price": "precios",
     "Average Sale Price per Order": "precio promedio por pedido",
-    "total_orders": "pedidos totales"
+    "total_orders": "pedidos totales",
+    "running_total_metric_selector": "Total Acumulado",
+    "total_sale_price": "Precio de Venta Total"
 }

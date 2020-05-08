@@ -12,6 +12,8 @@
     "price_range": "Range of Prices",
     "number_of_items_ordered": "Number of Items Ordered",
     "Sale Price": "sale price",
-    "Average Sale Price per Order": "avg price per order",
-    "total_orders": "all of the orders"
+    "running_total_metric_selector": "Running Total Metric Selector",
+    "total_sale_price": "Total Sale Price",
+    "total_orders": "Total Orders",
+    "Average Sale Price per Order": "Avg Sale Price per order"
 }

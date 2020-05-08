@@ -251,13 +251,14 @@ view: order_items {
 ##### RUNNING TOTALS TEST ###########
 
 parameter:  running_total_metric_selector {
+  label: "running_total_metric_selector"
   type: string
   allowed_value: {
-    label: "{{ _user_attributes['email'] }}"
+    label: "total_sale_price"
     value: "total_sale_price"
   }
   allowed_value: {
-    label: "{{ _localization['total_orders'] }}"
+    label: "total_orders"
     value: "total_number_of_orders"
   }
   allowed_value: {
