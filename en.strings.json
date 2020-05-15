@@ -1,0 +1,19 @@
+{
+    "Department": "department",
+    "Category": "category",
+    "Brand": "brand",
+    "Country": "country",
+    "Count_of_Products": "Count of Products",
+    "Inexpensive": "Cheap",
+    "Normal": "Regular",
+    "Expensive": "Pricey",
+    "week_start_day_dash": "Week Start Day",
+    "Week_Start_Day": "Week Start Day",
+    "price_range": "Range of Prices",
+    "number_of_items_ordered": "Number of Items Ordered",
+    "Sale Price": "sale price",
+    "running_total_metric_selector": "Running Total Metric Selector",
+    "total_sale_price": "Total Sale Price",
+    "total_orders": "Total Orders",
+    "Average Sale Price per Order": "Avg Sale Price per order"
+}

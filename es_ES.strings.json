@@ -1,0 +1,19 @@
+{
+    "Department": "Departamento",
+    "Category": "Categoría",
+    "Brand": "Marca",
+    "Country": "País",
+    "Count of Products": "Cuenta de Productos",
+    "Inexpensive": "Barato",
+    "Normal": "Normal",
+    "Expensive": "Caro",
+    "week_start_day_dash": "día de inicio de semana",
+    "Week Start Day": "día de inicio de semana",
+    "price_range": "rango de precios",
+    "number_of_items_ordered": "cantidad de artículos pedidos",
+    "Sale Price": "precios",
+    "Average Sale Price per Order": "precio promedio por pedido",
+    "total_orders": "pedidos totales",
+    "running_total_metric_selector": "Total Acumulado",
+    "total_sale_price": "Precio de Venta Total"
+}
