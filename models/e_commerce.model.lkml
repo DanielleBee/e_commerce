@@ -66,8 +66,30 @@ explore: min_max_order_dates {}
 
 explore: orders_derived_table {}
 
-explore: products {
+explore: orders_test {
+  from: orders
 #   fields: [ALL_FIELDS*, -products.brand]
+  join: customers {
+    view_label: "People"
+    from:  users
+    sql_on: ${orders_test.user_id} = ${customers.id} ;;
+    relationship: many_to_one
+    type: left_outer
+  }
+  join: retailers {
+    view_label: "People"
+    from:  users
+    sql_on: ${orders_test.user_id} = ${retailers.id} ;;
+    relationship: many_to_one
+    type: left_outer
+  }
+  join: suppliers {
+    view_label: "People"
+    from:  users
+    sql_on: ${orders_test.user_id} = ${suppliers.id} ;;
+    relationship: many_to_one
+    type: left_outer
+  }
 }
 
 explore: orders {

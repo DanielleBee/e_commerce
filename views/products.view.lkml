@@ -189,17 +189,22 @@ THEN ${category}
 
   dimension: category {
     type: string
-    sql: CONCAT(${TABLE}.category, " ", ${TABLE}.category, " ", ${TABLE}.category) ;;
-    html: {% assign words = {{value}} | split: ' ' %}
-{% assign numwords = 0 %}
-{% for word in words %}
-{{ word }}
-{% assign numwords = numwords | plus: 1 %}
-{% assign mod = numwords | modulo: 3 %}
-{% if mod == 0 %}
-<br>
-{% endif %}
-{% endfor %} ;;
+    sql: ${TABLE}.category;;
+  }
+
+  dimension: jeans {
+    type: yesno
+    sql: ${category} like "%jeans%" ;;
+  }
+
+  dimension: accessories {
+    type: yesno
+    sql: ${category} like "%accessories%" ;;
+  }
+
+  dimension: pants {
+    type: yesno
+    sql: ${category} = "%pants%" ;;
   }
 
   measure: count {

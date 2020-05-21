@@ -102,8 +102,8 @@ view: order_items {
   measure: total_sale_price {
     type: sum
     sql: ${sale_price} ;;
-    value_format_name: usd
-    html: {{ orders.status._rendered_value | unescape  }}: Text String {{ rendered_value }} ;;
+    value_format_name: usd_0
+#     html: {{ orders.status._rendered_value | unescape  }}: Text String {{ rendered_value }} ;;
   }
 
   measure: percent_diff_sale_and_discount {
@@ -251,7 +251,7 @@ view: order_items {
 ##### RUNNING TOTALS TEST ###########
 
 parameter:  running_total_metric_selector {
-  label: "running_total_metric_selector"
+  label: "Metric Selector"
   type: string
   allowed_value: {
     label: "total_sale_price"
@@ -267,21 +267,38 @@ parameter:  running_total_metric_selector {
   }
 }
 
-measure: running_total_measure {
+measure: dynamic_total_measure {
+  label_from_parameter: running_total_metric_selector
+  type: number
+  sql:
+  {% if running_total_metric_selector._parameter_value == "'total_sale_price'" %}
+      ${order_items.total_sale_price}
+    {% else %}
+      ${orders.count}
+    {% endif %};;
+  html: {% if running_total_metric_selector._parameter_value == "'total_number_of_orders'" %}
+  {{ orders.count._rendered_value }}
+  {% else %}
+  {{ total_sale_price._rendered_value }}
+  {% endif %}  ;;
+}
+
+
+  measure: running_total_measure {
 #   label_from_parameter: running_total_metric_selector
-label: "{% if running_total_metric_selector._parameter_value == \"'total_number_of_orders'\" %} {{ _user_attributes['first_name'] }}
-{% elsif running_total_metric_selector._parameter_value == \"'total_sale_price'\" %} {{ _user_attributes['last_name'] }}
-{% else %} Product Group
-{% endif %}"
+  label: "{% if running_total_metric_selector._parameter_value == \"'total_number_of_orders'\" %} {{ _user_attributes['first_name'] }}
+  {% elsif running_total_metric_selector._parameter_value == \"'total_sale_price'\" %} {{ _user_attributes['last_name'] }}
+  {% else %} Product Group
+  {% endif %}"
   type: running_total
-  value_format: "#,##0.00"
+#   value_format: "#,##0.00"
   direction: "column"
   sql: CASE
-  WHEN {% parameter running_total_metric_selector %} = 'total_number_of_orders' THEN ${orders.count}
-  WHEN {% parameter running_total_metric_selector %} = 'total_sale_price' THEN ${order_items.total_sale_price}
-  WHEN {% parameter running_total_metric_selector %} = 'average' THEN (${order_items.total_sale_price}/${orders.count})
-  ELSE NULL
-  END ;;
+      WHEN {% parameter running_total_metric_selector %} = 'total_number_of_orders' THEN ${orders.count}
+      WHEN {% parameter running_total_metric_selector %} = 'total_sale_price' THEN ${order_items.total_sale_price}
+      WHEN {% parameter running_total_metric_selector %} = 'average' THEN (${order_items.total_sale_price}/${orders.count})
+      ELSE NULL
+      END ;;
 }
 
   measure: running_total_sale_price {

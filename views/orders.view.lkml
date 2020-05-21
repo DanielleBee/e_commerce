@@ -16,6 +16,7 @@ view: orders {
   dimension: test {
     type: string
     sql: "Test" ;;
+    html: <p style="font-family:Garamond"> {{value}} </p> ;;
   }
 
   dimension_group: created {
@@ -279,8 +280,13 @@ filter: date_filter_test {
     sql: ${id} ;;
     filters: {
       field: status
-      value: "cancelled"
+      value: "%cancelled%"
     }
+  }
+
+  measure: count_cancelled {
+    type: count
+    filters: [status: "cancelled"]
   }
 
 
