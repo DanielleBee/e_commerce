@@ -131,6 +131,12 @@ THEN ${category}
     type: number
     sql: ${TABLE}.retail_price ;;
     value_format_name: usd
+    html:
+    {% if value >= 30 %}
+  <div style = "border-style: dashed; border-color: black; border-width: thick"> {{ rendered_value }} </div>
+  {% elsif value <30 %}
+   <div style = "border-style: solid; border-color: blue; border-width: thin"> {{ rendered_value }} </div>
+  {% endif %} ;;
   }
 
   dimension: sku {
@@ -235,5 +241,12 @@ measure: total_retail_price {
   type:  sum
   sql: ${TABLE}.retail_price ;;
   value_format_name: usd_0
+#   html:
+#   {% if value >= 30 %}
+#   <div style = "border-style: dashed; border-color: black; border-width: thick"> {{ rendered_value }} </div>
+#   {% elsif products.total_retail_price == false %}
+#   <div style = "border-style: solid; border-color: blue; border-width: thin"> {{ rendered_value }} </div>
+#   {% else %} {{rendered_value}}
+#   {% endif %} ;;
 }
 }

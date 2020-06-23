@@ -16,6 +16,15 @@ datagroup: daily_refresh {
   max_cache_age: "24 hours"
 }
 
+datagroup: danielle_datagroup_test {
+  sql_trigger: SELECT MAX(current_hour) FROM sandbox_scratch.LB_danielle_test_current_hour;;
+  max_cache_age: "0 seconds"
+}
+
+datagroup: danielle_every_hour {
+  sql_trigger: SELECT FLOOR(UNIX_TIMESTAMP() / (1*60*60)) ;;
+}
+
 # explore: ndt {}
 
 explore: order_items {
@@ -66,31 +75,31 @@ explore: min_max_order_dates {}
 
 explore: orders_derived_table {}
 
-explore: orders_test {
-  from: orders
-#   fields: [ALL_FIELDS*, -products.brand]
-  join: customers {
-    view_label: "People"
-    from:  users
-    sql_on: ${orders_test.user_id} = ${customers.id} ;;
-    relationship: many_to_one
-    type: left_outer
-  }
-  join: retailers {
-    view_label: "People"
-    from:  users
-    sql_on: ${orders_test.user_id} = ${retailers.id} ;;
-    relationship: many_to_one
-    type: left_outer
-  }
-  join: suppliers {
-    view_label: "People"
-    from:  users
-    sql_on: ${orders_test.user_id} = ${suppliers.id} ;;
-    relationship: many_to_one
-    type: left_outer
-  }
-}
+# explore: orders_test {
+#   from: orders
+# #   fields: [ALL_FIELDS*, -products.brand]
+#   join: customers {
+#     view_label: "People"
+#     from:  users
+#     sql_on: ${orders_test.user_id} = ${customers.id} ;;
+#     relationship: many_to_one
+#     type: left_outer
+#   }
+#   join: retailers {
+#     view_label: "People"
+#     from:  users
+#     sql_on: ${orders_test.user_id} = ${retailers.id} ;;
+#     relationship: many_to_one
+#     type: left_outer
+#   }
+#   join: suppliers {
+#     view_label: "People"
+#     from:  users
+#     sql_on: ${orders_test.user_id} = ${suppliers.id} ;;
+#     relationship: many_to_one
+#     type: left_outer
+#   }
+# }
 
 explore: orders {
 #   sql_always_where:  {% if orders.date_granularity._parameter_value == "'Last Month'" %}

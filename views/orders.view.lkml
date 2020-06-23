@@ -33,6 +33,36 @@ view: orders {
     sql: ${TABLE}.created_at;;
   }
 
+  measure: test_mondays {
+    type: sum
+    sql: case when ${created_week} = ${created_date} then ${id} else null end  ;;
+  }
+
+#   dimension: test_date {
+#     type: date
+#     sql: case when ${order_items.order_returned} = true then ${created_date} else null end ;;
+#   }
+#
+#   dimension: test_date_interval_7 {
+#     type: date
+#     sql: DATE_ADD(${test_date}, INTERVAL 7 day);;
+#   }
+
+  dimension: 15_minutes {
+    type: date_time_of_day
+    sql: ${created_raw};;
+#       sql: DATE_FORMAT(FROM_UNIXTIME(UNIX_TIMESTAMP(orders.created_at) - (UNIX_TIMESTAMP(orders.created_at) % (60*15))),'%H:%i')),'%H:%i');;
+  }
+
+#   DATE_FORMAT(FROM_UNIXTIME(UNIX_TIMESTAMP(CONVERT_TZ(orders.created_at ,'UTC','America/Sao_Paulo')) - (UNIX_TIMESTAMP(CONVERT_TZ(orders.created_at ,'UTC','America/Sao_Paulo')) % (60*15))),'%Y-%m-%d %H:%i')),'%Y-%m-%d %H:%i')
+
+# DATE_FORMAT(TIMESTAMP(DATE_FORMAT(FROM_UNIXTIME(UNIX_TIMESTAMP(CONVERT_TZ(orders.created_at ,'UTC','America/Sao_Paulo')) - (UNIX_TIMESTAMP(CONVERT_TZ(orders.created_at ,'UTC','America/Sao_Paulo')) % (60*15))),'%Y-%m-%d %H:%i')),'%Y-%m-%d %H:%i')
+
+  dimension: 15_minutes_type {
+    type: date_minute15
+    sql: ${created_raw} ;;
+  }
+
   dimension_group: date_diff {
     type: duration
     sql_start: ${TABLE}.created_at ;;
